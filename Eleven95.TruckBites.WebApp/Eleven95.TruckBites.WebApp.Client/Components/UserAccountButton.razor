@@ -1,0 +1,37 @@
+@using Eleven95.TruckBites.Services.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager NavigationManager
+@inject IAuthService AuthService
+
+<AuthorizeView>
+    <Authorized>
+        <div>
+            <span>@AuthState!.User.Identity!.Name</span>
+            <button @onclick="Logout">Logout</button>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/auth/signin">Sign in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter] public Task<AuthenticationState>? GetAuth { get; set; }
+
+    private AuthenticationState? AuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (GetAuth != null)
+        {
+            AuthState = await GetAuth;
+        }
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.SignOutAsync();
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+
+}

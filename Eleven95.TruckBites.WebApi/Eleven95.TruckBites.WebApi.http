@@ -1,0 +1,6 @@
+@Eleven95.TruckBites.WebApi_HostAddress = http://localhost:5207
+
+GET {{Eleven95.TruckBites.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

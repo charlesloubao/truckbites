@@ -1,0 +1,54 @@
+﻿@rendermode InteractiveWebAssembly
+@attribute [StreamRendering]
+
+@page "/"
+
+@using Eleven95.TruckBites.Data.Models
+@using Eleven95.TruckBites.Services.Interfaces
+@using Eleven95.TruckBites.WebApp.Client.Components
+
+@implements IDisposable
+
+@inject IFoodTruckService FoodTruckService
+@inject PersistentComponentState ApplicationState
+
+<PageTitle>Home</PageTitle>
+
+<h2>Food Trucks</h2>
+
+@if (FoodTrucks == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <FoodTruckList FoodTrucks="@FoodTrucks"/>
+}
+
+@code {
+    private PersistingComponentStateSubscription persistingSubscription;
+    private List<FoodTruck>? FoodTrucks { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!ApplicationState.TryTakeFromJson<List<FoodTruck>>(nameof(FoodTrucks), out var foodTrucks))
+        {
+            FoodTrucks = await FoodTruckService.GetAllFoodTrucksAsync();
+        }
+        else
+        {
+            FoodTrucks = foodTrucks!;
+        }
+
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
+    }
+
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson(nameof(FoodTrucks), FoodTrucks);
+        return Task.CompletedTask;
+    }
+
+    void IDisposable.Dispose() => persistingSubscription.Dispose();
+
+}

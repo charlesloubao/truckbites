@@ -1,0 +1,48 @@
+﻿services:
+  mysql:
+    image: mysql:8.0
+    container_name: truckbites_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: truckbites
+      MYSQL_USER: truckbites_user
+      MYSQL_PASSWORD: truckbites_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  webapi:
+    build:
+      context: .
+      dockerfile: Eleven95.TruckBites.WebApi/Dockerfile
+    depends_on:
+      - mysql
+    environment:
+      - JwtSettings__Issuer=https://truckbites.eleven95.co
+      - JwtSettings__Audience=https://truckbites.eleven95.co
+      - JwtSettings__SecretKey=9D368479-BD44-4FB4-87CA-7916F4A81B60
+      - ConnectionStrings__DefaultConnection=Server=mysql;Database=truckbites;User=truckbites_user;Password=truckbites_password;
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Eleven95.TruckBites.WebApp/Eleven95.TruckBites.WebApp/Dockerfile
+    depends_on:
+      - mysql
+      - webapi
+    environment:
+      - Api__BaseUrl=http://webapi:8080/
+      - ReverseProxy__Clusters__external-api__Destinations__destination1__Address=http://webapi:8080/
+    
+    ports:
+      - "8082:8080"
+      - "8083:8081"
+
+
+volumes:
+  mysql_data:
+

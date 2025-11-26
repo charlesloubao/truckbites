@@ -1,0 +1,18 @@
+@using Eleven95.TruckBites.Data.Models
+
+<ul>
+    @foreach (var foodTruck in FoodTrucks)
+    {
+        <li>
+            <div>
+                <h3>@foodTruck.DisplayName</h3>
+                <p>@foodTruck.Description</p>
+                <a href="@($"/foodtrucks/{foodTruck.FoodTruckId}")">View Menu</a>
+            </div>
+        </li>
+    }
+</ul>
+
+@code {
+    [Parameter] [EditorRequired] public List<FoodTruck> FoodTrucks { get; set; }
+}

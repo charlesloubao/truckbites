@@ -1,0 +1,106 @@
+using System.Net.Http.Headers;
+using Eleven95.TruckBites.Data;
+using Eleven95.TruckBites.Services.Interfaces;
+using Eleven95.TruckBites.WebApp.Client.Extensions;
+using Eleven95.TruckBites.WebApp.Client.Services;
+using Eleven95.TruckBites.WebApp.Components;
+using Eleven95.TruckBites.WebApp.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Yarp.ReverseProxy.Transforms;
+using AuthService = Eleven95.TruckBites.WebApp.Services.AuthService;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "TruckBites.Auth";
+        options.LoginPath = "/auth/signin";
+        options.LogoutPath = "/auth/signout";
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.SlidingExpiration = true;
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+    });
+
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+    .AddTransforms(builderContext =>
+    {
+        // This is the MAGIC part. 
+        // We add a transform to attach the JWT before sending to the API.
+        builderContext.AddRequestTransform(async transformContext =>
+        {
+            // Get the current user from the Cookie context
+            var user = transformContext.HttpContext.User;
+
+            // IF you are using an external IDP (Auth0, Entra ID, IdentityServer):
+            // Retrieve the Access Token saved in the cookie properties
+            var token = await transformContext.HttpContext.GetTokenAsync("access_token");
+
+            transformContext.ProxyRequest.Headers.Remove("Cookie");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                transformContext.ProxyRequest.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
+        });
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
+
+
+// This cache is used to persist state across prerendering.
+builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
+
+builder.Services.AddScoped<IFoodTruckService, FoodTruckService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IPaymentProcessor, PaymentProcessor>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAppHttpClients(builder.Configuration["Api:BaseUrl"]!);
+
+builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+}
+else
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseAntiforgery();
+app.MapControllers();
+app.MapReverseProxy();
+
+app.MapStaticAssets();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(Eleven95.TruckBites.WebApp.Client._Imports).Assembly);
+
+app.Run();

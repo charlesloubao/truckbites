@@ -1,0 +1,109 @@
+@rendermode InteractiveWebAssembly
+@attribute [StreamRendering]
+
+@page "/foodtrucks/{foodTruckId:long}"
+
+@using Eleven95.TruckBites.Data
+@using Eleven95.TruckBites.Data.Models
+@using Eleven95.TruckBites.Services.Interfaces
+
+@implements IDisposable
+
+@inject PersistentComponentState ApplicationState
+@inject NavigationManager NavigationManager
+@inject IFoodTruckService FoodTruckService
+@inject IOrderService OrderService
+@inject IJSRuntime JSRuntime
+
+@if (FoodTruck == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <PageTitle>@FoodTruck.DisplayName | TruckBites</PageTitle>
+
+    <h2>@FoodTruck.DisplayName</h2>
+    <p>@FoodTruck.Description</p>
+
+    <h3>Menu</h3>
+    @if (FoodTruck.MenuItems != null && FoodTruck.MenuItems.Any())
+    {
+        <ul>
+            @foreach (var menuItem in FoodTruck.MenuItems)
+            {
+                <li>
+                    <strong>@menuItem.Name</strong> - @menuItem.Price.ToString("C")
+                    @if (menuItem.IsSoldOut)
+                    {
+                        <span style="color: red;"> (Sold Out)</span>
+                    }
+                    else
+                    {
+                        <button @onclick="@(() => OrderItem(menuItem))">Order now</button>
+                    }
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No menu items available.</p>
+    }
+}
+
+@code {
+    private PersistingComponentStateSubscription persistingSubscription;
+
+    [Parameter] public long FoodTruckId { get; set; }
+    private FoodTruck? FoodTruck { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!ApplicationState.TryTakeFromJson<FoodTruck>(nameof(FoodTruck), out var foodTruck))
+        {
+            FoodTruck = await FoodTruckService.GetFoodTruckByIdAsync(FoodTruckId);
+        }
+        else
+        {
+            FoodTruck = foodTruck;
+        }
+
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (FoodTruck == null)
+        {
+            NavigationManager.NavigateTo("/not-found");
+        }
+    }
+
+    private async Task OrderItem(FoodTruckMenuItem menuItem)
+    {
+        var order = await OrderService.CreateOrderAsync(new CreateOrderRequest()
+        {
+            FoodTruckId = menuItem.FoodTruckId
+        });
+
+        var response = await OrderService.ProcessOrderAsync(order);
+
+        if (response.Success)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Order placed successfully!");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"An error occurred {response.ErrorMessage}");
+        }
+    }
+
+
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson(nameof(FoodTruck), FoodTruck);
+        return Task.CompletedTask;
+    }
+
+    void IDisposable.Dispose() => persistingSubscription.Dispose();
+
+}

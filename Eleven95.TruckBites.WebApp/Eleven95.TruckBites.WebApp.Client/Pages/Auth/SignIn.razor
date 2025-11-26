@@ -1,0 +1,20 @@
+@page "/auth/signin"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@using Eleven95.TruckBites.Services.Interfaces
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<h2>SignIn</h2>
+
+<button @onclick="LoginWithUserAndPassword">Login</button>
+
+@code {
+
+    private async Task LoginWithUserAndPassword(MouseEventArgs arg)
+    {
+        await AuthService.SignInAsync();
+        NavigationManager.NavigateTo("/");
+    }
+
+}

@@ -1,0 +1,25 @@
+@using Eleven95.TruckBites.Data.Models
+
+<ul>
+    @foreach (var order in Orders)
+    {
+        <li>
+            <div>
+                <h3>
+                    @order.OrderId
+                </h3>
+                <div>
+                    <div>@order.CreatedAt.ToString("g")</div>
+                    <div>@order.Amount.ToString("C")</div>
+                </div>
+                <a href="/account/orders/@order.OrderId">View Order</a>
+            </div>
+        </li>
+    }
+</ul>
+
+@code {
+
+    [Parameter] [EditorRequired] public List<Order> Orders { get; set; }
+
+}
