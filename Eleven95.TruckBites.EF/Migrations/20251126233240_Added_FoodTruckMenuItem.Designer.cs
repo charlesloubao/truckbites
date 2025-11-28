@@ -84,7 +84,7 @@ namespace Eleven95.TruckBites.EF.Migrations
                     b.HasOne("Eleven95.TruckBites.Data.Models.FoodTruck", null)
                         .WithMany("MenuItems")
                         .HasForeignKey("FoodTruckId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

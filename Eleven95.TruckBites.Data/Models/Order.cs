@@ -12,6 +12,8 @@ public class Order
     [Required] public required OrderStatus Status { get; set; }
     [Required] public required DateTime CreatedAt { get; set; }
     [Required] public required DateTime UpdatedAt { get; set; }
+
+    public List<OrderItem> OrderItems { get; set; }
 }
 
 public enum OrderStatus

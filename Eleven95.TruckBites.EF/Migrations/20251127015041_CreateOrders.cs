@@ -32,7 +32,7 @@ namespace Eleven95.TruckBites.EF.Migrations
                         column: x => x.FoodTruckId,
                         principalTable: "FoodTrucks",
                         principalColumn: "FoodTruckId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
