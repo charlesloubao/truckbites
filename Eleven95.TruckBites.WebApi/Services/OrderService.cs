@@ -13,7 +13,8 @@ public class OrderService : IOrderService
     private readonly AppDbContext _dbContext;
     private readonly IUserProvider _userProvider;
 
-    public OrderService(AppDbContext dbContext, IPaymentProcessor paymentProcessor, ILogger<OrderService> logger, IUserProvider userProvider)
+    public OrderService(AppDbContext dbContext, IPaymentProcessor paymentProcessor, ILogger<OrderService> logger,
+        IUserProvider userProvider)
     {
         _dbContext = dbContext;
         _paymentProcessor = paymentProcessor;
@@ -30,6 +31,7 @@ public class OrderService : IOrderService
     {
         return await _dbContext.Orders
             .Include(o => o.FoodTruck)
+            .Include(o => o.OrderItems)
             .FirstOrDefaultAsync(o => o.OrderId == id);
     }
 

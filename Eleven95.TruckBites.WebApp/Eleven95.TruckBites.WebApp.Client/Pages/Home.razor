@@ -7,10 +7,7 @@
 @using Eleven95.TruckBites.Services.Interfaces
 @using Eleven95.TruckBites.WebApp.Client.Components
 
-@implements IDisposable
-
 @inject IFoodTruckService FoodTruckService
-@inject PersistentComponentState ApplicationState
 
 <PageTitle>Home</PageTitle>
 
@@ -26,29 +23,15 @@ else
 }
 
 @code {
-    private PersistingComponentStateSubscription persistingSubscription;
+    
+    [PersistentState] public Order? Order { get; set; }
     private List<FoodTruck>? FoodTrucks { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        if (!ApplicationState.TryTakeFromJson<List<FoodTruck>>(nameof(FoodTrucks), out var foodTrucks))
+        if (FoodTrucks == null)
         {
             FoodTrucks = await FoodTruckService.GetAllFoodTrucksAsync();
         }
-        else
-        {
-            FoodTrucks = foodTrucks!;
-        }
-
-        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
     }
-
-    private Task PersistData()
-    {
-        ApplicationState.PersistAsJson(nameof(FoodTrucks), FoodTrucks);
-        return Task.CompletedTask;
-    }
-
-    void IDisposable.Dispose() => persistingSubscription.Dispose();
-
 }

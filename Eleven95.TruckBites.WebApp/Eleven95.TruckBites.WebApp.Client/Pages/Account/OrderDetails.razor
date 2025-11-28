@@ -1,0 +1,49 @@
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@attribute [Authorize]
+
+@page "/account/orders/{OrderId:long}"
+@using Eleven95.TruckBites.Data.Models
+@using Eleven95.TruckBites.Services.Interfaces
+@using Microsoft.AspNetCore.Authorization
+
+@inject ILogger<OrderDetails> Logger
+@inject IOrderService OrderService
+
+@if (Order == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div>
+        <h2>Order #@Order.OrderId</h2>
+        <p><strong>Status:</strong> @Order.Status</p>
+        <p><strong>Food Truck:</strong> <a href="/foodtrucks/@Order.FoodTruckId">@Order.FoodTruck.DisplayName</a></p>
+
+        <h3>Items</h3>
+        <ul>
+            @foreach (var item in Order.OrderItems)
+            {
+                <li>@item.Quantity x @item.ItemName - @item.TotalPrice</li>
+            }
+        </ul>
+
+        <p><strong>Total Amount:</strong> $@Order.Amount.ToString("F2")</p>
+
+        <p><strong>Created:</strong> @Order.CreatedAt.ToLocalTime()</p>
+        <p><strong>Updated:</strong> @Order.UpdatedAt.ToLocalTime()</p>
+    </div>
+}
+
+@code {
+    [Parameter] public long OrderId { get; set; }
+
+    public Order? Order { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.LogInformation("Loading order details for OrderId: {OrderId}", OrderId);
+        Order = await OrderService.GetOrderByIdAsync(OrderId);
+    }
+
+}
