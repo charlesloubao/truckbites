@@ -92,3 +92,51 @@ To work on the code without Docker:
 1.  Ensure you have a local MySQL instance running (connection string in `appsettings.Development.json`).
 2.  Open `Eleven95.TruckBites.sln` in **JetBrains Rider**.
 3.  Set multiple startup projects (WebApi + WebApp) and press Run.
+
+## Architecture
+
+```mermaid
+graph TD
+%% Actors
+    UserWeb([👤 Web User])
+UserMobile(["📱 Mobile User<br>(Future Blazor Hybrid)"])
+
+%% Subgraph for the Solution
+subgraph "Eleven95.TruckBites Solution"
+direction TB
+
+%% Frontend
+subgraph "Frontend Layer"
+WebApp["💻 WebApp Container<br>(.NET 10 Blazor Server/WASM)"]
+end
+
+%% Backend
+subgraph "Backend Layer"
+WebApi["⚙️ WebApi Container<br>(.NET 9 REST API)"]
+end
+
+%% Data
+subgraph "Data Layer"
+DB[("🗄️ MySQL Database")]
+end
+end
+
+%% Relationships
+UserWeb -->|HTTPS / Browser| WebApp
+UserMobile -->|HTTPS / JSON| WebApi
+
+WebApp -->|YARP Reverse Proxy 
+Acts as a BackendForFrontend
+and Reverse Proxy for connecting
+to the API from Web Client| WebApi
+WebApi -->|EF Core / TCP| DB
+
+%% Styling
+classDef container fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+classDef db fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+classDef actor fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+
+class WebApp,WebApi container;
+class DB db;
+class UserWeb,UserMobile actor;
+```
