@@ -22,7 +22,7 @@ public class OrdersController : ControllerBase
     {
         var userId = long.Parse(HttpContext.User.Claims
             .First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-        var order = await _orderService.CreateOrderAsync(request, userId);
+        var order = await _orderService.CreateOrderAsync(request);
         return Ok(order);
     }
 

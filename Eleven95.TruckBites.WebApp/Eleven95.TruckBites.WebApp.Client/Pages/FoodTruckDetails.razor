@@ -82,12 +82,12 @@ else
     {
         var order = await OrderService.CreateOrderAsync(new CreateOrderRequest()
         {
+            UserId = 0,
             FoodTruckId = menuItem.FoodTruckId,
-        }, 0);
+        });
 
         await OrderService.AddItemToOrderAsync(new AddItemToOrderRequest()
         {
-            FoodTruckId = menuItem.FoodTruckId,
             OrderId = order.OrderId,
             FoodTruckMenuItemId = menuItem.FoodTruckMenuItemId,
             Quantity = 1

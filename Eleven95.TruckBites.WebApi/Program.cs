@@ -1,5 +1,6 @@
 using System.Text;
 using Eleven95.TruckBites.Data;
+using Eleven95.TruckBites.Data.Services;
 using Eleven95.TruckBites.Services.Interfaces;
 using Eleven95.TruckBites.WebApi.Services;
 using Eleven95.TruckBites.WebApi.Services.Interfaces;
@@ -62,6 +63,8 @@ builder.Services.AddScoped<IFoodTruckService, FoodTruckService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentProcessor, StripePaymentProcessor>();
+builder.Services.AddScoped<IUserProvider, UserProvider>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

@@ -8,6 +8,9 @@ public class OrderItem
 
     [Required] public required long OrderId { get; set; }
 
+    [Required] public required long UserId { get; set; }
+    public User User { get; set; }
+
     [Required] public required long FoodTruckMenuItemId { get; set; }
     public FoodTruckMenuItem FoodTruckMenuItem { get; set; }
 
@@ -20,7 +23,7 @@ public class OrderItem
     public decimal ItemPrice { get; set; }
 
     public int Quantity { get; set; }
-    
+
     // Calculated property, not necessarily stored
     public decimal TotalPrice => ItemPrice * Quantity;
 

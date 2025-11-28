@@ -35,7 +35,7 @@ public class OrderService : IOrderService
         return await response.Content.ReadFromJsonAsync<Order>();
     }
 
-    public async Task<Order> CreateOrderAsync(CreateOrderRequest request, long userId)
+    public async Task<Order> CreateOrderAsync(CreateOrderRequest request)
     {
         var response = await _httpClient.PostAsJsonAsync("api/orders", request);
         response.EnsureSuccessStatusCode();
