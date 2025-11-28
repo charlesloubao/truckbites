@@ -9,4 +9,6 @@ public class User
     [Required] public required string DisplayName { get; set; }
     [Required] public DateTime CreatedAt { get; set; }
     [Required] public DateTime UpdatedAt { get; set; }
+
+    public List<Order> Orders { get; set; }
 }

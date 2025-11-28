@@ -5,6 +5,6 @@ namespace Eleven95.TruckBites.Services.Interfaces;
 
 public interface IAuthService
 {
-    public Task<SignInResponse> SignInAsync();
+    public Task<SignInResponse> SignInWithEmailAndPassword(SignInRequest model);
     public Task SignOutAsync();
 }

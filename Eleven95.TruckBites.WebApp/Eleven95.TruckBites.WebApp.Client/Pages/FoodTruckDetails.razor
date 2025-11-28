@@ -82,10 +82,18 @@ else
     {
         var order = await OrderService.CreateOrderAsync(new CreateOrderRequest()
         {
-            FoodTruckId = menuItem.FoodTruckId
+            FoodTruckId = menuItem.FoodTruckId,
+        }, 0);
+
+        await OrderService.AddItemToOrderAsync(new AddItemToOrderRequest()
+        {
+            FoodTruckId = menuItem.FoodTruckId,
+            OrderId = order.OrderId,
+            FoodTruckMenuItemId = menuItem.FoodTruckMenuItemId,
+            Quantity = 1
         });
 
-        var response = await OrderService.ProcessOrderAsync(order);
+        var response = await OrderService.PlaceOrderAsync(order.OrderId);
 
         if (response.Success)
         {
@@ -93,7 +101,7 @@ else
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"An error occurred {response.ErrorMessage}");
+            await JSRuntime.InvokeVoidAsync("alert", $"An error occurred {response.Message}");
         }
     }
 

@@ -20,10 +20,10 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("signin")]
-    public async Task<IActionResult> SignIn()
+    public async Task<IActionResult> SignIn([FromBody] SignInRequest request)
     {
         Console.WriteLine(_authService.GetType());
-        var response = await _authService.SignInAsync();
+        var response = await _authService.SignInWithEmailAndPassword(request);
 
         if (!response.Success)
         {

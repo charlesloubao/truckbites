@@ -35,7 +35,7 @@ public class OrderService : IOrderService
         return await response.Content.ReadFromJsonAsync<Order>();
     }
 
-    public async Task<Order> CreateOrderAsync(CreateOrderRequest request)
+    public async Task<Order> CreateOrderAsync(CreateOrderRequest request, long userId)
     {
         var response = await _httpClient.PostAsJsonAsync("api/orders", request);
         response.EnsureSuccessStatusCode();
@@ -44,8 +44,20 @@ public class OrderService : IOrderService
 
     public async Task<ProcessPaymentResponse> ProcessOrderAsync(Order order)
     {
-        var response = await _httpClient.PostAsJsonAsync($"api/orders/{order.OrderId}/process", order);
+        throw new NotImplementedException();
+    }
+
+    public async Task<Order> AddItemToOrderAsync(AddItemToOrderRequest request)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"api/orders/{request.OrderId}/items", request);
         response.EnsureSuccessStatusCode();
-        return (await response.Content.ReadFromJsonAsync<ProcessPaymentResponse>())!;
+        return (await response.Content.ReadFromJsonAsync<Order>())!;
+    }
+
+    public async Task<APIResponse> PlaceOrderAsync(long orderId)
+    {
+        var response = await _httpClient.PostAsync($"api/orders/{orderId}/place-order", null);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<APIResponse>())!;
     }
 }

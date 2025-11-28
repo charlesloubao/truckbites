@@ -30,11 +30,12 @@ public class OrderService : IOrderService
             .FirstOrDefaultAsync(o => o.OrderId == id);
     }
 
-    public async Task<Order> CreateOrderAsync(CreateOrderRequest request)
+    public async Task<Order> CreateOrderAsync(CreateOrderRequest request, long userId)
     {
         _logger.LogInformation($"Creating order for food truck {request.FoodTruckId}");
         var order = new Order()
         {
+            UserId = userId,
             Amount = 0,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -58,5 +59,49 @@ public class OrderService : IOrderService
         await _dbContext.SaveChangesAsync();
 
         return new ProcessPaymentResponse(true, null);
+    }
+
+    public async Task<Order> AddItemToOrderAsync(AddItemToOrderRequest request)
+    {
+        var foodTruckMenuItem =
+            await _dbContext.FoodTruckMenuItems.FirstAsync(ftmi =>
+                ftmi.FoodTruckMenuItemId == request.FoodTruckMenuItemId && ftmi.FoodTruckId == request.FoodTruckId);
+
+        var order = await _dbContext.Orders.FirstAsync(o =>
+            o.OrderId == request.OrderId && o.Status == OrderStatus.Created);
+
+        var orderItem = new OrderItem()
+        {
+            OrderId = request.OrderId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            Quantity = request.Quantity,
+            FoodTruckMenuItemId = foodTruckMenuItem.FoodTruckMenuItemId,
+            ItemPrice = foodTruckMenuItem.Price,
+            ItemName = foodTruckMenuItem.Name
+        };
+
+        order.Amount += orderItem.TotalPrice;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        _dbContext.OrderItems.Add(orderItem);
+        await _dbContext.SaveChangesAsync();
+
+        return order;
+    }
+
+    public async Task<APIResponse> PlaceOrderAsync(long orderId)
+    {
+        var order = await _dbContext.Orders.FirstAsync(o =>
+            o.OrderId == orderId && o.Status == OrderStatus.Created);
+
+        _logger.LogInformation("Processing order {OrderOrderId}", order.OrderId);
+        order.Status = OrderStatus.Completed;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        _dbContext.Orders.Update(order);
+        await _dbContext.SaveChangesAsync();
+
+        return new APIResponse() { Success = true };
     }
 }

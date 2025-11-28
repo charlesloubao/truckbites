@@ -16,9 +16,9 @@ public class AuthService : IAuthService
         _httpClient = clientFactory.CreateApiClient();
     }
 
-    public async Task<SignInResponse> SignInAsync()
+    public async Task<SignInResponse> SignInWithEmailAndPassword(SignInRequest model)
     {
-        var response = await _httpClient.PostAsync("api/auth/signin", null);
+        var response = await _httpClient.PostAsync("api/auth/signin", JsonContent.Create(model));
         try
         {
             response.EnsureSuccessStatusCode();

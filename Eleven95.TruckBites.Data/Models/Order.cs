@@ -6,6 +6,9 @@ public class Order
 {
     public long OrderId { get; set; }
 
+    [Required] public required long UserId { get; set; }
+    public User User { get; set; }
+
     [Required] public required long FoodTruckId { get; set; }
     public FoodTruck FoodTruck { get; set; }
     [Required] public required decimal Amount { get; set; }
@@ -19,7 +22,6 @@ public class Order
 public enum OrderStatus
 {
     Created,
-    CheckedOut,
     PendingPayment,
     PaymentFailed,
     PaymentSucceeded,

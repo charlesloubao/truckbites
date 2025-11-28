@@ -2,6 +2,7 @@ using System.Text;
 using Eleven95.TruckBites.Data;
 using Eleven95.TruckBites.Services.Interfaces;
 using Eleven95.TruckBites.WebApi.Services;
+using Eleven95.TruckBites.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +59,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 builder.Services.AddScoped<IFoodTruckService, FoodTruckService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentProcessor, StripePaymentProcessor>();
 

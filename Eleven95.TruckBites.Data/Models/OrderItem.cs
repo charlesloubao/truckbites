@@ -7,7 +7,6 @@ public class OrderItem
     public long OrderItemId { get; set; }
 
     [Required] public required long OrderId { get; set; }
-    public Order Order { get; set; }
 
     [Required] public required long FoodTruckMenuItemId { get; set; }
     public FoodTruckMenuItem FoodTruckMenuItem { get; set; }

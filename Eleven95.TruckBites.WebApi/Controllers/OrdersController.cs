@@ -20,7 +20,9 @@ public class OrdersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Order>> CreateOrder([FromBody] CreateOrderRequest request)
     {
-        var order = await _orderService.CreateOrderAsync(request);
+        var userId = long.Parse(HttpContext.User.Claims
+            .First(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+        var order = await _orderService.CreateOrderAsync(request, userId);
         return Ok(order);
     }
 
@@ -44,9 +46,16 @@ public class OrdersController : ControllerBase
         return Ok(order);
     }
 
+    [HttpPost("{id}/items")]
+    public async Task<ActionResult<Order>> AddItemToOrder(long id, [FromBody] AddItemToOrderRequest request)
+    {
+        var order = await _orderService.AddItemToOrderAsync(request);
+        return Ok(order);
+    }
+
     [HttpPost]
-    [Route("{orderId:long}/process")]
-    public async Task<ActionResult<ProcessPaymentResponse>> ProcessOrder(long orderId)
+    [Route("{orderId:long}/place-order")]
+    public async Task<ActionResult<APIResponse>> ProcessOrder(long orderId)
     {
         var order = await _orderService.GetOrderByIdAsync(orderId);
 
@@ -55,7 +64,7 @@ public class OrdersController : ControllerBase
             return BadRequest();
         }
 
-        var response = await _orderService.ProcessOrderAsync(order);
+        var response = await _orderService.PlaceOrderAsync(orderId);
         return Ok(response);
     }
 }
