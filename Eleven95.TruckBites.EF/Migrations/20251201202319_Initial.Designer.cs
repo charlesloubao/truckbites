@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eleven95.TruckBites.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251201134035_AddPayouts")]
-    partial class AddPayouts
+    [Migration("20251201202319_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -176,7 +176,7 @@ namespace Eleven95.TruckBites.EF.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("PaymentProcessorType")
+                    b.Property<string>("PaymentProcessor")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -213,6 +213,10 @@ namespace Eleven95.TruckBites.EF.Migrations
 
                     b.Property<long>("FoodTruckId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("PaymentProcessor")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Status")
                         .IsRequired()

@@ -7,7 +7,6 @@
     <file url="file://$PROJECT_DIR$/.idea/.idea.Eleven95.TruckBites/.idea/queries/Query_3.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/.idea/.idea.Eleven95.TruckBites/.idea/queries/Query_4.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/.idea/.idea.Eleven95.TruckBites/.idea/queries/Query_5.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/Eleven95.TruckBites.EF/Migrations/20251201131143_ChangeOrderStatusToString.cs" dialect="MySQL" />
     <file url="PROJECT" dialect="MySQL" />
   </component>
 </project>
