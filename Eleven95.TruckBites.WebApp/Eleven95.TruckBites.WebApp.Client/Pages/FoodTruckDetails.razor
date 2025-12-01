@@ -37,7 +37,9 @@ else
                     }
                     else
                     {
-                        <button @onclick="@(() => OrderItem(menuItem))">Order now</button>
+                        <button disabled="@(!RendererInfo.IsInteractive)" @onclick="@(() => OrderItem(menuItem))">Order
+                            now
+                        </button>
                     }
                 </li>
             }

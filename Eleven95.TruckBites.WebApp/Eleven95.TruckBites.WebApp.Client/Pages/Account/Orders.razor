@@ -1,4 +1,4 @@
-@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@rendermode @(InteractiveWebAssembly)
 @attribute [Authorize]
 
 @page "/account/orders"
@@ -22,12 +22,15 @@ else
 }
 
 @code {
-    private List<Order>? UserOrders { get; set; }
+    public List<Order>? UserOrders { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Logger.LogInformation("OnInitializedAsync");
-        UserOrders = await OrderService.GetAllOrdersAsync();
+        if (firstRender)
+        {
+            UserOrders = await OrderService.GetAllOrdersAsync();
+            StateHasChanged();
+        }
     }
 
 }
