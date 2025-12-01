@@ -67,6 +67,15 @@ spec:
       labels:
         app: webapi
     spec:
+      initContainers:
+        # Run EF migrations
+        - name: ef-migrations
+          image: truckbites-ef-migrations:latest
+          imagePullPolicy: Never
+          env:
+            # For local dev, we use root, but in production we should use a user with least privileges
+            - name: ConnectionStrings__DefaultConnection
+              value: "Server=mysql;Database=truckbites;User=root;Password=rootpassword;"
       containers:
       - name: webapi
         image: truckbites-webapi:latest

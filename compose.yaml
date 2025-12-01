@@ -1,5 +1,6 @@
 ﻿services:
   mysql:
+    restart: always
     image: mysql:8.0
     container_name: truckbites_mysql
     environment:
@@ -11,13 +12,30 @@
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-
+  
+  ef-migrations:
+    # db might not be ready yet, so we restart until it runs all migrations
+    restart: on-failure
+    build:
+      context: .
+      # Assuming the Dockerfile you just created is located here
+      dockerfile: Eleven95.TruckBites.EF/migrations.Dockerfile
+    depends_on:
+      mysql:
+        condition: service_started
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=mysql;Database=truckbites;User=truckbites_user;Password=truckbites_password;
+  
   webapi:
+    restart: always
     build:
       context: .
       dockerfile: Eleven95.TruckBites.WebApi/Dockerfile
     depends_on:
-      - mysql
+      mysql:
+        condition: service_started
+      ef-migrations:
+        condition: service_completed_successfully
     environment:
       - JwtSettings__Issuer=https://truckbites.eleven95.co
       - JwtSettings__Audience=https://truckbites.eleven95.co
@@ -28,6 +46,7 @@
       - "8081:8081"
 
   webapp:
+    restart: always
     build:
       context: .
       dockerfile: Eleven95.TruckBites.WebApp/Eleven95.TruckBites.WebApp/Dockerfile

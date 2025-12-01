@@ -1,0 +1,44 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  webapi:
+    build:
+      context: "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites"
+      dockerfile: "Eleven95.TruckBites.WebApi/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net9.0/Eleven95.TruckBites.WebApi.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "eleven95.truckbites.webapi:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites\\Eleven95.TruckBites.WebApi:/app:rw"
+    - "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites:/src:rw"
+    - "C:\\Users\\Charles\\AppData\\Roaming\\Microsoft\\UserSecrets:/home/app/.microsoft/usersecrets"
+    - "C:\\Users\\Charles\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"
+  webapp:
+    build:
+      context: "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites"
+      dockerfile: "Eleven95.TruckBites.WebApp/Eleven95.TruckBites.WebApp/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net10.0/Eleven95.TruckBites.WebApp.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_STATICWEBASSETS: "/app/bin/Debug/net10.0/Eleven95.TruckBites.WebApp.staticwebassets.runtime.CT.json"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "eleven95.truckbites.webapp:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites\\Eleven95.TruckBites.WebApp\\\
+      Eleven95.TruckBites.WebApp:/app:rw"
+    - "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites:/src:rw"
+    - "C:\\Users\\Charles\\AppData\\Roaming\\Microsoft\\UserSecrets:/home/app/.microsoft/usersecrets"
+    - "C:\\Users\\Charles\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"
