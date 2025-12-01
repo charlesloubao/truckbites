@@ -10,7 +10,7 @@ public class Payment
 
     [Required] public required string ExternalId { get; set; }
 
-    [Required] [Column(TypeName = "text")] public PaymentProcessorType PaymentProcessorType { get; set; }
+    [Required] [Column(TypeName = "text")] public PaymentProcessorType PaymentProcessor { get; set; }
     [Required] public required DateTime CreatedAt { get; set; }
     [Required] public required DateTime UpdatedAt { get; set; }
 

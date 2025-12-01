@@ -138,12 +138,27 @@ public class OrderService : IOrderService
             {
                 Amount = order.Amount,
                 ExternalId = Guid.NewGuid().ToString(),
-                PaymentProcessorType = PaymentProcessorType.None,
+                PaymentProcessor = PaymentProcessorType.None,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 Status = PaymentStatus.Success
             };
 
+            //TODO: This most likely needs to be moved to a background job
+            _logger.LogInformation("Creating instant payout to food truck {FoodTruckId}", order.FoodTruckId);
+
+            var payout = new Payout()
+            {
+                Amount = order.Amount,
+                ExternalId = Guid.NewGuid().ToString(),
+                PaymentProcessor = PaymentProcessorType.None,
+                FoodTruckId = order.FoodTruckId,
+                Status = PayoutStatus.Completed,
+                CreatedDate = DateTime.UtcNow,
+                CompletedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow
+            };
+            _dbContext.Payouts.Add(payout);
 
             _logger.LogInformation("Setting order {OrderId} as completed", order.OrderId);
             order.Payment = payment;

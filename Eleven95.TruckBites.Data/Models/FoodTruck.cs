@@ -15,6 +15,8 @@ public class FoodTruck
     [Required] public required string Description { get; set; }
 
     public List<FoodTruckMenuItem> MenuItems { get; set; }
-    
+
     public List<Order> Orders { get; set; }
+
+    public List<Payout> Payouts { get; set; }
 }
