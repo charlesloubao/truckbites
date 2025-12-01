@@ -55,7 +55,7 @@ public class OrdersController : ControllerBase
 
     [HttpPost]
     [Route("{orderId:long}/place-order")]
-    public async Task<ActionResult<APIResponse>> ProcessOrder(long orderId)
+    public async Task<ActionResult<Order>> ProcessOrder(long orderId)
     {
         var order = await _orderService.GetOrderByIdAsync(orderId);
 

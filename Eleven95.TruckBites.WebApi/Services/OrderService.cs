@@ -118,23 +118,49 @@ public class OrderService : IOrderService
         return order;
     }
 
-    public async Task<APIResponse> PlaceOrderAsync(long orderId)
+    public async Task<Order> PlaceOrderAsync(long orderId)
     {
-        var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
-            o.OrderId == orderId && o.Status == OrderStatus.Created);
-
-        if (order == null)
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+        try
         {
-            throw new Exception("Order not found.");
+            var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
+                o.OrderId == orderId && o.Status == OrderStatus.Created);
+
+            if (order == null)
+            {
+                throw new Exception("Order not found.");
+            }
+
+            //TODO: Implement actual logic here
+
+            _logger.LogInformation("Creating payment record for order {OrderOrderId}", order.OrderId);
+            var payment = new Payment()
+            {
+                Amount = order.Amount,
+                ExternalId = Guid.NewGuid().ToString(),
+                PaymentProcessorType = PaymentProcessorType.None,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Status = PaymentStatus.Success
+            };
+
+
+            _logger.LogInformation("Setting order {OrderId} as completed", order.OrderId);
+            order.Payment = payment;
+            order.Status = OrderStatus.Completed;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            _dbContext.Orders.Update(order);
+            await _dbContext.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+
+            return order;
         }
-
-        _logger.LogInformation("Processing order {OrderOrderId}", order.OrderId);
-        order.Status = OrderStatus.Completed;
-        order.UpdatedAt = DateTime.UtcNow;
-
-        _dbContext.Orders.Update(order);
-        await _dbContext.SaveChangesAsync();
-
-        return new APIResponse() { Success = true };
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }

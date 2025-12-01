@@ -85,15 +85,8 @@ else
 
         var response = await OrderService.PlaceOrderAsync(order.OrderId);
 
-        if (response.Success)
-        {
-            await JSRuntime.InvokeVoidAsync("alert", "Order placed successfully!");
-            NavigationManager.NavigateTo($"/account/orders/{order.OrderId}");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("alert", $"An error occurred {response.Message}");
-        }
+        await JSRuntime.InvokeVoidAsync("alert", "Order placed successfully!");
+        NavigationManager.NavigateTo($"/account/orders/{response.OrderId}");
     }
 
 

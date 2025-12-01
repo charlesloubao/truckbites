@@ -54,10 +54,10 @@ public class OrderService : IOrderService
         return (await response.Content.ReadFromJsonAsync<Order>())!;
     }
 
-    public async Task<APIResponse> PlaceOrderAsync(long orderId)
+    public async Task<Order> PlaceOrderAsync(long orderId)
     {
         var response = await _httpClient.PostAsync($"api/orders/{orderId}/place-order", null);
         response.EnsureSuccessStatusCode();
-        return (await response.Content.ReadFromJsonAsync<APIResponse>())!;
+        return (await response.Content.ReadFromJsonAsync<Order>())!;
     }
 }

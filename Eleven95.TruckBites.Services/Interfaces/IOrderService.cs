@@ -8,5 +8,5 @@ public interface IOrderService
     public Task<Order?> GetOrderByIdAsync(long id);
     public Task<Order> CreateOrderAsync(CreateOrderRequest request);
     public Task<Order> AddItemToOrderAsync(AddItemToOrderRequest request);
-    Task<APIResponse> PlaceOrderAsync(long orderId);
+    Task<Order> PlaceOrderAsync(long orderId);
 }
