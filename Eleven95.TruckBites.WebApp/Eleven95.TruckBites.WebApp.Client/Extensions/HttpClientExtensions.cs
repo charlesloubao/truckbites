@@ -6,12 +6,12 @@ namespace Eleven95.TruckBites.WebApp.Client.Extensions;
 
 public static class HttpClientExtensions
 {
-    public static void AddAppHttpClients(this IServiceCollection services, string baseAddress)
+    public static IHttpClientBuilder AddAppHttpClients(this IServiceCollection services, string baseAddress)
     {
         Action<HttpClient> createApiHttpClient =
             client => { client.BaseAddress = new Uri(baseAddress); };
 
-        services.AddHttpClient("api", createApiHttpClient);
+        return services.AddHttpClient("api", createApiHttpClient);
     }
     
     public static HttpClient CreateApiClient(this IHttpClientFactory clientFactory) => clientFactory.CreateClient("api");

@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using Eleven95.TruckBites.Data;
 using Eleven95.TruckBites.Services.Interfaces;
+using Eleven95.TruckBites.WebApp;
 using Eleven95.TruckBites.WebApp.Client.Extensions;
 using Eleven95.TruckBites.WebApp.Client.Services;
 using Eleven95.TruckBites.WebApp.Components;
@@ -27,12 +29,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.Cookie.SameSite = SameSiteMode.Lax;
     });
+builder.Services.AddAuthorization();
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
     .AddTransforms(builderContext =>
     {
-        // This is the MAGIC part. 
+        // This is used during the WebAssembly phase when YARP acts as a reverse proxy
+
         // We add a transform to attach the JWT before sending to the API.
         builderContext.AddRequestTransform(async transformContext =>
         {
@@ -53,8 +57,6 @@ builder.Services.AddReverseProxy()
         });
     });
 
-builder.Services.AddAuthorization();
-
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents()
@@ -68,15 +70,23 @@ builder.Services.AddScoped<IFoodTruckService, FoodTruckService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentProcessor, PaymentProcessor>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddAppHttpClients(builder.Configuration["Api:BaseUrl"]!);
+
+// This is used during pre-rendering to pass tokens to the underlining API
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<ServerSideAuthTokenHandler>();
+
+builder.Services.AddAppHttpClients(builder.Configuration["Api:BaseUrl"]!)
+    .AddHttpMessageHandler<ServerSideAuthTokenHandler>();
 
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-    });;
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+;
 
 var app = builder.Build();
 

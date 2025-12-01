@@ -1,4 +1,3 @@
-@rendermode @(InteractiveWebAssembly)
 @attribute [Authorize]
 
 @page "/account/orders"
@@ -6,6 +5,7 @@
 @using Eleven95.TruckBites.Services.Interfaces
 @using Eleven95.TruckBites.WebApp.Client.Components
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 
 @inject ILogger<Orders> Logger
 @inject IOrderService OrderService
@@ -22,14 +22,21 @@ else
 }
 
 @code {
-    public List<Order>? UserOrders { get; set; }
+    [CascadingParameter] public Task<AuthenticationState> Auth { get; set; }
+    [PersistentState] public List<Order>? UserOrders { get; set; }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
+        var authState = await Auth;
+        Console.WriteLine(authState.User.Identity?.IsAuthenticated);
+        if (authState.User.Identity?.IsAuthenticated != true)
+        {
+            return;
+        }
+
+        if (UserOrders == null)
         {
             UserOrders = await OrderService.GetAllOrdersAsync();
-            StateHasChanged();
         }
     }
 
