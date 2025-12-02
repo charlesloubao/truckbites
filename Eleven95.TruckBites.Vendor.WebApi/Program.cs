@@ -1,14 +1,10 @@
-using System.Text;
 using Eleven95.TruckBites.Data;
 using Eleven95.TruckBites.Data.Services;
 using Eleven95.TruckBites.Server.Shared.Services;
 using Eleven95.TruckBites.Services.Interfaces;
-using Eleven95.TruckBites.WebApi.Services;
-using Eleven95.TruckBites.WebApi.Services.Interfaces;
+using Eleven95.TruckBites.Vendor.WebApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,25 +28,17 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler =
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
-;
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddOpenApi();
-}
-
-// This cache is used to persist state across prerendering.
-builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")!)
 );
 
-builder.Services.AddScoped<IFoodTruckService, FoodTruckService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IPaymentProcessor, StripePaymentProcessor>();
 builder.Services.AddScoped<IUserProvider, UserProvider>();
+builder.Services.AddScoped<IOrderFulfillmentService, OrderFulfillmentService>();
+builder.Services.AddScoped<IFoodTruckAdminService, FoodTruckAdminService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
@@ -63,7 +51,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

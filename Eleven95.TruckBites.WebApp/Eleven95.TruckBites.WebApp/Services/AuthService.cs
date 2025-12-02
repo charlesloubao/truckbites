@@ -1,7 +1,6 @@
-using System.Security.Claims;
+using Eleven95.TruckBites.Client.Shared.Extensions;
 using Eleven95.TruckBites.Data.Models;
 using Eleven95.TruckBites.Services.Interfaces;
-using Eleven95.TruckBites.WebApp.Client.Extensions;
 
 namespace Eleven95.TruckBites.WebApp.Services;
 

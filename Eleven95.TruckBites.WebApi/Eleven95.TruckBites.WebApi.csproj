@@ -17,6 +17,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Eleven95.TruckBites.Data\Eleven95.TruckBites.Data.csproj" />
+      <ProjectReference Include="..\Eleven95.TruckBites.Server.Shared\Eleven95.TruckBites.Server.Shared.csproj" />
       <ProjectReference Include="..\Eleven95.TruckBites.Services\Eleven95.TruckBites.Services.csproj" />
     </ItemGroup>
 

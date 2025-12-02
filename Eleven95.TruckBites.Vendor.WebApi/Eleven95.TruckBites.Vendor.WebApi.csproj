@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>6ef2070c-0c60-49af-a83d-8dfd30655452</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
+        <PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.9" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Eleven95.TruckBites.Data\Eleven95.TruckBites.Data.csproj" />
+      <ProjectReference Include="..\Eleven95.TruckBites.Server.Shared\Eleven95.TruckBites.Server.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

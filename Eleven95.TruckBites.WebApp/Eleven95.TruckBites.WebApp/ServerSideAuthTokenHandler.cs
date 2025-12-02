@@ -14,8 +14,6 @@ public class ServerSideAuthTokenHandler(IHttpContextAccessor httpContextAccessor
         {
             var token = await httpContext.GetTokenAsync("access_token");
 
-            Console.WriteLine("TOKEN: {0}", token);
-
             if (!string.IsNullOrEmpty(token))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);

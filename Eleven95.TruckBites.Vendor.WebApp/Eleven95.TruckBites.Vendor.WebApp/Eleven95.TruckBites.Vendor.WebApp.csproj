@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+        <UserSecretsId>41a34f56-01ca-42cb-858d-b8705003c992</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.5.1" />
+        <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
+        <ProjectReference Include="..\..\Eleven95.TruckBites.Services\Eleven95.TruckBites.Services.csproj" />
+        <ProjectReference Include="..\Eleven95.TruckBites.Vendor.WebApp.Client\Eleven95.TruckBites.Vendor.WebApp.Client.csproj" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+    </ItemGroup>
+
+</Project>

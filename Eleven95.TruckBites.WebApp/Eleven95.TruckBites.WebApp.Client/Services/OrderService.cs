@@ -1,7 +1,7 @@
 using Eleven95.TruckBites.Data.Models;
 using Eleven95.TruckBites.Services.Interfaces;
 using System.Net.Http.Json;
-using Eleven95.TruckBites.WebApp.Client.Extensions;
+using Eleven95.TruckBites.Client.Shared.Extensions;
 
 namespace Eleven95.TruckBites.WebApp.Client.Services;
 

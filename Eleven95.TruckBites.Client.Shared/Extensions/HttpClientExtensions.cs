@@ -1,8 +1,6 @@
-using Eleven95.TruckBites.Services.Interfaces;
-using Eleven95.TruckBites.WebApp.Client.Services;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Eleven95.TruckBites.WebApp.Client.Extensions;
+namespace Eleven95.TruckBites.Client.Shared.Extensions;
 
 public static class HttpClientExtensions
 {

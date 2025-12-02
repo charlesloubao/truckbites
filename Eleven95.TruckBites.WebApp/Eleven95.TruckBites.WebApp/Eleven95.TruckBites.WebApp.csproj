@@ -17,6 +17,7 @@
         <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.0-rc" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
         <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
+        <ProjectReference Include="..\..\Eleven95.TruckBites.Client.Shared\Eleven95.TruckBites.Client.Shared.csproj" />
         <ProjectReference Include="..\..\Eleven95.TruckBites.Data\Eleven95.TruckBites.Data.csproj" />
         <ProjectReference Include="..\Eleven95.TruckBites.WebApp.Client\Eleven95.TruckBites.WebApp.Client.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.0" />

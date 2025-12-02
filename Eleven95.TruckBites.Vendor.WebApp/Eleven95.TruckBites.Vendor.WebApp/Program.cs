@@ -1,33 +1,17 @@
-using System.Diagnostics;
 using System.Net.Http.Headers;
 using Auth0.AspNetCore.Authentication;
-using Eleven95.TruckBites.Client.Shared.Extensions;
-using Eleven95.TruckBites.Data;
-using Eleven95.TruckBites.Services.Interfaces;
-using Eleven95.TruckBites.WebApp;
-using Eleven95.TruckBites.WebApp.Client.Services;
-using Eleven95.TruckBites.WebApp.Components;
-using Eleven95.TruckBites.WebApp.Services;
+using Eleven95.TruckBites.Vendor.WebApp.Components;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Yarp.ReverseProxy.Transforms;
-using AuthService = Eleven95.TruckBites.WebApp.Services.AuthService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Add services to the container.
 builder.Services.AddAuth0WebAppAuthentication(options =>
 {
     options.Domain = builder.Configuration["Auth0:Domain"]!;
     options.ClientId = builder.Configuration["Auth0:ClientId"]!;
     options.ClientSecret = builder.Configuration["Auth0:ClientSecret"]!;
-}).WithAccessToken(options =>
-{
-    options.Audience = builder.Configuration["Auth0:Audience"];
-});
+}).WithAccessToken(options => { options.Audience = builder.Configuration["Auth0:Audience"]; });
 
 builder.Services.AddAuthorization();
 
@@ -57,26 +41,10 @@ builder.Services.AddReverseProxy()
         });
     });
 
+// Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
-
-
-// This cache is used to persist state across prerendering.
-builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
-
-builder.Services.AddScoped<IFoodTruckService, FoodTruckService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IPaymentProcessor, PaymentProcessor>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-
-// This is used during pre-rendering to pass tokens to the underlining API
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddTransient<ServerSideAuthTokenHandler>();
-
-builder.Services.AddAppHttpClients(builder.Configuration["Api:BaseUrl"]!)
-    .AddHttpMessageHandler<ServerSideAuthTokenHandler>();
 
 builder.Services.AddCascadingAuthenticationState();
 
@@ -102,19 +70,20 @@ else
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();
+
 app.MapControllers();
 app.MapReverseProxy();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(Eleven95.TruckBites.WebApp.Client._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(Eleven95.TruckBites.Vendor.WebApp.Client._Imports).Assembly);
 
 app.Run();

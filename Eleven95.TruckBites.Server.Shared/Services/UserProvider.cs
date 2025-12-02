@@ -1,7 +1,8 @@
 using System.Security.Claims;
 using Eleven95.TruckBites.Data.Services;
+using Microsoft.AspNetCore.Http;
 
-namespace Eleven95.TruckBites.WebApi.Services;
+namespace Eleven95.TruckBites.Server.Shared.Services;
 
 public class UserProvider : IUserProvider
 {
