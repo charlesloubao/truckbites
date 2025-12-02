@@ -19,8 +19,8 @@ await host.RunAsync();
 
 public class UserProvider : IUserProvider
 {
-    public long? GetCurrentUserId()
+    public string? GetCurrentUserId()
     {
-        return 0;
+        return "";
     }
 }

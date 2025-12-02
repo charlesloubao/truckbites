@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
 
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, appUser.UserId.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, appUser.UserId),
             new Claim(ClaimTypes.Name, appUser.DisplayName),
             new Claim(ClaimTypes.Email, appUser.EmailAddress),
         };

@@ -56,7 +56,7 @@ public class OrderService : IOrderService
 
         var order = new Order()
         {
-            UserId = _userProvider.GetCurrentUserId()!.Value,
+            UserId = _userProvider.GetCurrentUserId()!,
             Amount = 0,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -99,7 +99,7 @@ public class OrderService : IOrderService
 
         var orderItem = new OrderItem()
         {
-            UserId = _userProvider.GetCurrentUserId()!.Value,
+            UserId = _userProvider.GetCurrentUserId()!,
             OrderId = request.OrderId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,

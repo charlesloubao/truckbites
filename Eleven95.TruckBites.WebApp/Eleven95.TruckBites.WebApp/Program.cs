@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using Auth0.AspNetCore.Authentication;
 using Eleven95.TruckBites.Data;
 using Eleven95.TruckBites.Services.Interfaces;
 using Eleven95.TruckBites.WebApp;
@@ -17,7 +18,17 @@ using AuthService = Eleven95.TruckBites.WebApp.Services.AuthService;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+// Add services to the container.
+builder.Services.AddAuth0WebAppAuthentication(options =>
+{
+    options.Domain = builder.Configuration["Auth0:Domain"]!;
+    options.ClientId = builder.Configuration["Auth0:ClientId"]!;
+    options.ClientSecret = builder.Configuration["Auth0:ClientSecret"]!;
+}).WithAccessToken(options =>
+{
+    options.Audience = builder.Configuration["Auth0:Audience"];
+});;
+/*builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.Cookie.Name = "TruckBites.Auth";
@@ -28,7 +39,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.HttpOnly = true;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.Cookie.SameSite = SameSiteMode.Lax;
-    });
+    });*/
 builder.Services.AddAuthorization();
 
 builder.Services.AddReverseProxy()

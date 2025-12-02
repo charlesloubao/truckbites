@@ -5,13 +5,16 @@ namespace Eleven95.TruckBites.WebApp;
 
 public class ServerSideAuthTokenHandler(IHttpContextAccessor httpContextAccessor) : DelegatingHandler
 {
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
         var httpContext = httpContextAccessor.HttpContext;
 
         if (httpContext != null)
         {
             var token = await httpContext.GetTokenAsync("access_token");
+
+            Console.WriteLine("TOKEN: {0}", token);
 
             if (!string.IsNullOrEmpty(token))
             {

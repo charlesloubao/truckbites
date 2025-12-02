@@ -12,11 +12,11 @@ public class UserProvider : IUserProvider
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public long? GetCurrentUserId()
+    public string? GetCurrentUserId()
     {
         var userIdClaim = _httpContextAccessor.HttpContext!.User.Claims
             .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
-        return userIdClaim != null ? long.Parse(userIdClaim!.Value) : null;
+        return userIdClaim?.Value;
     }
 }

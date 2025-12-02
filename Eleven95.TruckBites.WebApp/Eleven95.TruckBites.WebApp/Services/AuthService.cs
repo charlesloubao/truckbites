@@ -2,8 +2,6 @@ using System.Security.Claims;
 using Eleven95.TruckBites.Data.Models;
 using Eleven95.TruckBites.Services.Interfaces;
 using Eleven95.TruckBites.WebApp.Client.Extensions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Eleven95.TruckBites.WebApp.Services;
 

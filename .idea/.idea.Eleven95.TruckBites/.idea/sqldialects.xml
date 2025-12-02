@@ -10,6 +10,8 @@
     <file url="file://$PROJECT_DIR$/.idea/.idea.Eleven95.TruckBites/.idea/queries/Query_6.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/.idea/.idea.Eleven95.TruckBites/.idea/queries/Query_7.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/.idea/.idea.Eleven95.TruckBites/.idea/queries/Query_8.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/.idea/.idea.Eleven95.TruckBites/.idea/queries/Query_9.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/Eleven95.TruckBites.EF/DB/2_seed.sql" dialect="MySQL" />
     <file url="PROJECT" dialect="MySQL" />
   </component>
 </project>

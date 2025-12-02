@@ -8,7 +8,7 @@ public class OrderItem
 
     [Required] public required long OrderId { get; set; }
 
-    [Required] public required long UserId { get; set; }
+    [Required] public required string UserId { get; set; }
     public User User { get; set; }
 
     [Required] public required long FoodTruckMenuItemId { get; set; }

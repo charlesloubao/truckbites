@@ -12,15 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-// Auth
-
-// 1. Get Settings
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["SecretKey"];
-var keyBytes = Encoding.UTF8.GetBytes(secretKey);
-
-// 2. Add Authentication Services
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
     {
@@ -29,27 +21,17 @@ builder.Services.AddAuthentication(options =>
     })
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-
-            // Optional: Remove default 5 min clock skew if you want strict expiration
-            ClockSkew = TimeSpan.Zero
-        };
+        options.Authority = jwtSettings["Authority"];
+        options.Audience = jwtSettings["Audience"];
     });
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-    });;
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+;
 
 if (builder.Environment.IsDevelopment())
 {

@@ -71,7 +71,6 @@ else
     {
         var order = await OrderService.CreateOrderAsync(new CreateOrderRequest()
         {
-            UserId = 0,
             FoodTruckId = menuItem.FoodTruckId,
         });
 

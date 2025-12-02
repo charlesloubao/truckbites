@@ -9,12 +9,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.5.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Identity.Web" Version="4.1.1" />
+        <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="4.1.1" />
         <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.0-rc" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
         <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
         <ProjectReference Include="..\..\Eleven95.TruckBites.Data\Eleven95.TruckBites.Data.csproj" />
-        <ProjectReference Include="..\Eleven95.TruckBites.WebApp.Client\Eleven95.TruckBites.WebApp.Client.csproj"/>
+        <ProjectReference Include="..\Eleven95.TruckBites.WebApp.Client\Eleven95.TruckBites.WebApp.Client.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.0" />
     </ItemGroup>
 

@@ -55,8 +55,7 @@ namespace Eleven95.TruckBites.EF.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
                     EmailAddress = table.Column<string>(type: "longtext", nullable: false),
                     DisplayName = table.Column<string>(type: "longtext", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -89,7 +88,7 @@ namespace Eleven95.TruckBites.EF.Migrations
                         column: x => x.FoodTruckId,
                         principalTable: "FoodTrucks",
                         principalColumn: "FoodTruckId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -116,7 +115,7 @@ namespace Eleven95.TruckBites.EF.Migrations
                         column: x => x.FoodTruckId,
                         principalTable: "FoodTrucks",
                         principalColumn: "FoodTruckId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -126,7 +125,7 @@ namespace Eleven95.TruckBites.EF.Migrations
                 {
                     OrderId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
                     FoodTruckId = table.Column<long>(type: "bigint", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
@@ -142,7 +141,7 @@ namespace Eleven95.TruckBites.EF.Migrations
                         column: x => x.FoodTruckId,
                         principalTable: "FoodTrucks",
                         principalColumn: "FoodTruckId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Orders_Payments_PaymentId",
                         column: x => x.PaymentId,
@@ -153,7 +152,7 @@ namespace Eleven95.TruckBites.EF.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -164,7 +163,7 @@ namespace Eleven95.TruckBites.EF.Migrations
                     OrderItemId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     OrderId = table.Column<long>(type: "bigint", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
                     FoodTruckMenuItemId = table.Column<long>(type: "bigint", nullable: false),
                     ItemName = table.Column<string>(type: "longtext", nullable: false),
                     ItemPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -180,19 +179,19 @@ namespace Eleven95.TruckBites.EF.Migrations
                         column: x => x.FoodTruckMenuItemId,
                         principalTable: "FoodTruckMenuItems",
                         principalColumn: "FoodTruckMenuItemId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderItems_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "OrderId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderItems_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
