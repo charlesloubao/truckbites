@@ -1,6 +1,4 @@
 ﻿@using Eleven95.TruckBites.Services.Interfaces
-@using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
 @page "/"
 
 @inject IFoodTruckAdminService FoodTruckAdminService
@@ -25,11 +23,12 @@ else
 
 @code {
 
-    private List<Data.Models.FoodTruck>? FoodTrucks { get; set; }
+
+    [PersistentState] public List<Data.Models.FoodTruck>? FoodTrucks { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        FoodTrucks = await FoodTruckAdminService.GetFoodTrucksAsync();
+        FoodTrucks ??= await FoodTruckAdminService.GetFoodTrucksAsync();
     }
 
 }

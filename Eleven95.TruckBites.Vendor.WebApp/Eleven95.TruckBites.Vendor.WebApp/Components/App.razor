@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="@Assets["app.css"]"/>
     <link rel="stylesheet" href="@Assets["Eleven95.TruckBites.Vendor.WebApp.styles.css"]"/>
     <ImportMap/>
-    <HeadOutlet @rendermode="InteractiveWebAssembly"/>
+    <HeadOutlet @rendermode="InteractiveAuto"/>
 </head>
 
 <body>
-<Routes @rendermode="@(new InteractiveWebAssemblyRenderMode(prerender: false))"/>
+<Routes @rendermode="InteractiveAuto"/>
 <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 

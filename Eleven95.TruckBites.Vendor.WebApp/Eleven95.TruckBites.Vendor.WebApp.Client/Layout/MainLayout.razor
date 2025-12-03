@@ -1,42 +1,39 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 
-<AuthorizeView>
-    <Authorized>
-        <header>
-            <h1>TruckBites Vendor App</h1>
-            <nav>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/account/settings">Account Settings</a></li>
-                </ul>
-            </nav>
-            <strong>User Info</strong>
-            <ul>
-                @foreach (var claim in AuthenticationState?.User.Claims ?? [])
-                {
-                    <li>
-                        <strong>@claim.Type: </strong>
-                        <span>@claim.Value</span>
-                    </li>
-                }
-            </ul>
-            <a href="/account/logout">Logout</a>
-        </header>
-        <main>
-            @Body
+<header>
+    <h1>TruckBites Vendor App</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/account/settings">Account Settings</a></li>
+        </ul>
+    </nav>
+    <strong>User Info</strong>
+    <ul>
+        @foreach (var claim in (AuthenticationState?.User.Claims ?? []))
+        {
+            <li>
+                <strong>@claim.Type: </strong>
+                <span>@claim.Value</span>
+            </li>
+        }
+    </ul>
+    <a href="/account/logout">Logout</a>
+</header>
+<main>
+    @Body
 
-            <div id="blazor-error-ui" data-nosnippet>
-                An unhandled error has occurred.
-                <a href="." class="reload">Reload</a>
-                <span class="dismiss">🗙</span>
-            </div>
-        </main>
-        <footer>
+    <div id="blazor-error-ui" data-nosnippet>
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+</main>
+<footer>
 
-        </footer>
-    </Authorized>
-</AuthorizeView>
+</footer>
 
 @code {
 

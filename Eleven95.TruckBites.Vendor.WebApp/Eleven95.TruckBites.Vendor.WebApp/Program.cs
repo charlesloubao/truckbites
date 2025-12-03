@@ -6,6 +6,7 @@ using Eleven95.TruckBites.Services.Interfaces;
 using Eleven95.TruckBites.Vendor.WebApp.Client.Services;
 using Eleven95.TruckBites.Vendor.WebApp.Components;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +21,12 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 builder.Services.AddAppHttpClients(builder.Configuration["Api:BaseUrl"]!)
     .AddHttpMessageHandler<ServerSideAuthTokenHandler>();
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
@@ -51,12 +57,16 @@ builder.Services.AddReverseProxy()
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
+    .AddInteractiveServerComponents()
     .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
 
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddScoped<IFoodTruckAdminService, FoodTruckAdminService>();
 builder.Services.AddScoped<IOrderFulfillmentService, OrderFulfillmentService>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<ServerSideAuthTokenHandler>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -94,6 +104,7 @@ app.MapReverseProxy();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
+    .AddInteractiveServerRenderMode()
     .AddAdditionalAssemblies(typeof(Eleven95.TruckBites.Vendor.WebApp.Client._Imports).Assembly);
 
 app.Run();

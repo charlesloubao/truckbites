@@ -1,11 +1,13 @@
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Eleven95.TruckBites.Vendor.WebApp.Controllers;
 
 [ApiController]
+[AllowAnonymous]
 [Route("[controller]")]
 public class AccountController : ControllerBase
 {
@@ -15,7 +17,6 @@ public class AccountController : ControllerBase
         return Challenge(new AuthenticationProperties { RedirectUri = returnUrl },
             Auth0Constants.AuthenticationScheme);
     }
-
 
     [HttpGet("logout")]
     public async Task<IActionResult> Logout(string returnUrl = "/account/logged-out")
