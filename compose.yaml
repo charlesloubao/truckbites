@@ -38,7 +38,7 @@
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
     ports:
-      - "8081:80"
+      - "8082:80"
   
   customer-webapi:
     restart: always
@@ -76,6 +76,41 @@
     ports:
       - "8080:8080"
 
+  vendor-webapi:
+    restart: always
+    build:
+      context: .
+      dockerfile: Eleven95.TruckBites.Vendor.WebApi/Dockerfile
+    depends_on:
+      mysql:
+        condition: service_started
+      ef-migrations:
+        condition: service_completed_successfully
+
+    environment:
+      - JwtSettings__Authority=${VENDOR_WEBAPI_JWT_SETTINGS_AUTHORITY}
+      - JwtSettings__Audience=${VENDOR_WEBAPI_JWT_SETTINGS_AUDIENCE}
+      - ConnectionStrings__DefaultConnection=${DB_APP_CONNECTION_STRING}
+
+  vendor-webapp:
+    restart: always
+    build:
+      context: .
+      dockerfile: Eleven95.TruckBites.Vendor.WebApp/Eleven95.TruckBites.Vendor.WebApp/Dockerfile
+    depends_on:
+      - mysql
+      - vendor-webapi
+
+    environment:
+      - Api__BaseUrl=http://vendor-webapi:8080/
+      - ReverseProxy__Clusters__external-api__Destinations__destination1__Address=http://vendor-webapi:8080/
+      - Auth0__Domain=${VENDOR_WEBAPP_AUTH0_DOMAIN}
+      - Auth0__ClientId=${VENDOR_WEBAPP_AUTH0_CLIENT_ID}
+      - Auth0__Audience=${VENDOR_WEBAPP_AUTH0_AUDIENCE}
+      - Auth0__ClientSecret=${VENDOR_WEBAPP_AUTH0_CLIENT_SECRET}
+    
+    ports:
+      - "8081:8080"
 volumes:
   mysql_data:
 

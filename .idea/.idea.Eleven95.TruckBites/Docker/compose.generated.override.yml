@@ -42,3 +42,45 @@ services:
     - "C:\\Users\\Charles\\AppData\\Roaming\\Microsoft\\UserSecrets:/home/app/.microsoft/usersecrets"
     - "C:\\Users\\Charles\\.nuget\\packages:/home/app/.nuget/packages"
     working_dir: "/app"
+  vendor-webapi:
+    build:
+      context: "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites"
+      dockerfile: "Eleven95.TruckBites.Vendor.WebApi/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net10.0/Eleven95.TruckBites.Vendor.WebApi.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "eleven95.truckbites.vendor.webapi:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites\\Eleven95.TruckBites.Vendor.WebApi:/app:rw"
+    - "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites:/src:rw"
+    - "C:\\Users\\Charles\\AppData\\Roaming\\Microsoft\\UserSecrets:/home/app/.microsoft/usersecrets"
+    - "C:\\Users\\Charles\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"
+  vendor-webapp:
+    build:
+      context: "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites"
+      dockerfile: "Eleven95.TruckBites.Vendor.WebApp/Eleven95.TruckBites.Vendor.WebApp/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net10.0/Eleven95.TruckBites.Vendor.WebApp.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_STATICWEBASSETS: "/app/bin/Debug/net10.0/Eleven95.TruckBites.Vendor.WebApp.staticwebassets.runtime.CT.json"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "eleven95.truckbites.vendor.webapp:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites\\Eleven95.TruckBites.Vendor.WebApp\\\
+      Eleven95.TruckBites.Vendor.WebApp:/app:rw"
+    - "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites:/src:rw"
+    - "C:\\Users\\Charles\\AppData\\Roaming\\Microsoft\\UserSecrets:/home/app/.microsoft/usersecrets"
+    - "C:\\Users\\Charles\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"
