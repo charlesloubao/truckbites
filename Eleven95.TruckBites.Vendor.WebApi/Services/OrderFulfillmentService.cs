@@ -20,36 +20,74 @@ public class OrderFulfillmentService : IOrderFulfillmentService
         _userProvider = userProvider;
     }
 
-    public async Task<List<Order>> GetAllOrdersAsync()
+    public async Task<List<Order>> GetOrdersForFoodTruck(long foodTruckId)
     {
         var orders = await _dbContext.Orders
             .IgnoreQueryFilters()
+            .Where(o => o.FoodTruckId == foodTruckId)
             .ToListAsync();
 
         return orders;
     }
 
-    public async Task<Order?> GetOrderByIdAsync(long id)
+    public async Task<Order?> GetOrderByIdAsync(long foodtruckId, long orderId)
     {
         var order = await _dbContext.Orders
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(o => o.OrderId == id);
+            .Include(o => o.OrderItems)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId && o.FoodTruckId == foodtruckId);
 
         return order;
     }
 
-    public Task<Order> ConfirmOrderAsync(long orderId)
+    public async Task<Order> ConfirmOrderAsync(long foodTruckId, long orderId)
     {
-        throw new NotImplementedException();
+        var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
+            o.FoodTruckId == foodTruckId && o.OrderId == orderId);
+
+        if (order == null)
+        {
+            throw new Exception("Order not found.");
+        }
+
+        order.Status = OrderStatus.Processing;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+        return order;
     }
 
-    public Task<Order> CancelOrderAsync(long orderId)
+    public async Task<Order> CancelOrderAsync(long foodTruckId, long orderId)
     {
-        throw new NotImplementedException();
+        var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
+            o.FoodTruckId == foodTruckId && o.OrderId == orderId);
+
+        if (order == null)
+        {
+            throw new Exception("Order not found.");
+        }
+
+        order.Status = OrderStatus.Cancelled;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+        return order;
     }
 
-    public Task<Order> CompleteOrderAsync(long orderId)
+    public async Task<Order> CompleteOrderAsync(long foodTruckId, long orderId)
     {
-        throw new NotImplementedException();
+        var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
+            o.FoodTruckId == foodTruckId && o.OrderId == orderId);
+
+        if (order == null)
+        {
+            throw new Exception("Order not found.");
+        }
+
+        order.Status = OrderStatus.Completed;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+        return order;
     }
 }

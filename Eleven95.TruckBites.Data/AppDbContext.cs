@@ -19,12 +19,4 @@ public class AppDbContext : DbContext
     {
         this._userProvider = userProvider;
     }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<Order>().HasQueryFilter(o => o.UserId == _userProvider.GetCurrentUserId()!);
-        modelBuilder.Entity<OrderItem>().HasQueryFilter(oi => oi.UserId == _userProvider.GetCurrentUserId()!);
-    }
 }

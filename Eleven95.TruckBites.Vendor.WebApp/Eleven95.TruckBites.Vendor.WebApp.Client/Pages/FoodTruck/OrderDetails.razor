@@ -18,25 +18,82 @@ else
         <tr>
             <th>Item</th>
             <th>Quantity</th>
+            <th>Price</th>
         </tr>
         </thead>
+        <tbody>
+        @foreach (var item in Order.OrderItems)
+        {
+            <tr>
+                <td>@item.ItemName</td>
+                <td>@item.Quantity</td>
+                <td>$@item.ItemPrice.ToString("F2")</td>
+            </tr>
+        }
+        </tbody>
     </table>
+
+    <div class="order-info">
+        <p><strong>Status:</strong> @Order.Status</p>
+        <p><strong>Amount:</strong> $@Order.Amount.ToString("F2")</p>
+        <p><strong>Created:</strong> @Order.CreatedAt.ToString("g")</p>
+        <p><strong>Updated:</strong> @Order.UpdatedAt.ToString("g")</p>
+    </div>
+
+    <div class="order-actions">
+        @switch (Order.Status)
+        {
+            case OrderStatus.PendingConfirmation:
+                <button @onclick="ConfirmOrder" class="btn btn-success">Confirm Order</button>
+                <button @onclick="CancelOrder" class="btn btn-danger">Cancel Order</button>
+                break;
+            case OrderStatus.Confirmed:
+                <button @onclick="CompleteOrder" class="btn btn-primary">Process Order</button>
+                <button @onclick="CancelOrder" class="btn btn-danger">Cancel Order</button>
+                break;
+            case OrderStatus.Processing:
+                <button @onclick="CompleteOrder" class="btn btn-primary">Complete</button>
+                <button @onclick="CancelOrder" class="btn btn-danger">Cancel Order</button>
+                break;
+        }
+    </div>
 }
 
 @code {
     [Parameter] public long OrderId { get; set; }
     [Parameter] public long FoodTruckId { get; set; }
-    
+
     private Order? Order { get; set; }
 
 
     protected override async Task OnParametersSetAsync()
     {
-        Order = await OrderFulfillmentService.GetOrderByIdAsync(OrderId);
+        Order = await OrderFulfillmentService.GetOrderByIdAsync(FoodTruckId, OrderId);
         if (Order == null)
         {
             NavigationManager.NavigateTo("/not-found");
         }
+    }
+
+    private async Task ConfirmOrder()
+    {
+        var confirmedOrder = await OrderFulfillmentService.ConfirmOrderAsync(FoodTruckId, OrderId);
+        Order!.Status = confirmedOrder.Status;
+        Order.UpdatedAt = confirmedOrder.UpdatedAt;
+    }
+
+    private async Task CancelOrder()
+    {
+        var cancelledOrder = await OrderFulfillmentService.CancelOrderAsync(FoodTruckId, OrderId);
+        Order!.Status = cancelledOrder.Status;
+        Order.UpdatedAt = cancelledOrder.UpdatedAt;
+    }
+
+    private async Task CompleteOrder()
+    {
+        var completedOrder = await OrderFulfillmentService.CompleteOrderAsync(FoodTruckId, OrderId);
+        Order!.Status = completedOrder.Status;
+        Order.UpdatedAt = completedOrder.UpdatedAt;
     }
 
 }

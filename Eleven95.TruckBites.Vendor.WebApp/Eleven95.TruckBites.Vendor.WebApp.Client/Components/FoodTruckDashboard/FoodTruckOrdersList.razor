@@ -30,7 +30,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        AllOrders = await OrderFulfillmentService.GetAllOrdersAsync();
+        AllOrders = await OrderFulfillmentService.GetOrdersForFoodTruck(FoodTruckId);
     }
 
 }

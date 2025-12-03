@@ -160,9 +160,9 @@ public class OrderService : IOrderService
             };
             _dbContext.Payouts.Add(payout);
 
-            _logger.LogInformation("Setting order {OrderId} as completed", order.OrderId);
+            _logger.LogInformation("Setting order {OrderId} as PendingConfirmation from merchant", order.OrderId);
             order.Payment = payment;
-            order.Status = OrderStatus.Completed;
+            order.Status = OrderStatus.PendingConfirmation;
             order.UpdatedAt = DateTime.UtcNow;
 
             _dbContext.Orders.Update(order);

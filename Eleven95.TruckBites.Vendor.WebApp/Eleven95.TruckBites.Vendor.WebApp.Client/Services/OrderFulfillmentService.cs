@@ -14,16 +14,16 @@ public class OrderFulfillmentService : IOrderFulfillmentService
         _httpClient = httpClientFactory.CreateApiClient();
     }
 
-    public async Task<List<Order>> GetAllOrdersAsync()
+    public async Task<List<Order>> GetOrdersForFoodTruck(long foodTruckId)
     {
-        var response = await _httpClient.GetAsync("api/orders");
+        var response = await _httpClient.GetAsync($"api/FoodTrucks/{foodTruckId}/orders");
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<List<Order>>())!;
     }
 
-    public async Task<Order?> GetOrderByIdAsync(long id)
+    public async Task<Order?> GetOrderByIdAsync(long foodtruckId, long orderId)
     {
-        var response = await _httpClient.GetAsync($"api/orders/{id}");
+        var response = await _httpClient.GetAsync($"api/FoodTrucks/{foodtruckId}/orders/{orderId}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -35,18 +35,24 @@ public class OrderFulfillmentService : IOrderFulfillmentService
         return await response.Content.ReadFromJsonAsync<Order>();
     }
 
-    public Task<Order> ConfirmOrderAsync(long orderId)
+    public async Task<Order> ConfirmOrderAsync(long foodTruckId, long orderId)
     {
-        throw new NotImplementedException();
+        var response = await _httpClient.PostAsync($"api/FoodTrucks/{foodTruckId}/orders/{orderId}/confirm", null);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<Order>())!;
     }
 
-    public Task<Order> CancelOrderAsync(long orderId)
+    public async Task<Order> CancelOrderAsync(long foodTruckId, long orderId)
     {
-        throw new NotImplementedException();
+        var response = await _httpClient.PostAsync($"api/FoodTrucks/{foodTruckId}/orders/{orderId}/cancel", null);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<Order>())!;
     }
 
-    public Task<Order> CompleteOrderAsync(long orderId)
+    public async Task<Order> CompleteOrderAsync(long foodTruckId, long orderId)
     {
-        throw new NotImplementedException();
+        var response = await _httpClient.PostAsync($"api/FoodTrucks/{foodTruckId}/orders/{orderId}/complete", null);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<Order>())!;
     }
 }

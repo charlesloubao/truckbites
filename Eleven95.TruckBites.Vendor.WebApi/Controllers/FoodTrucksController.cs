@@ -9,10 +9,12 @@ namespace Eleven95.TruckBites.Vendor.WebApi.Controllers;
 public class FoodTrucksController : ControllerBase
 {
     private readonly IFoodTruckAdminService _foodTruckAdminService;
-    
-    public FoodTrucksController(IFoodTruckAdminService foodTruckAdminService)
+    private readonly IOrderFulfillmentService _orderService;
+
+    public FoodTrucksController(IFoodTruckAdminService foodTruckAdminService, IOrderFulfillmentService orderService)
     {
         _foodTruckAdminService = foodTruckAdminService;
+        _orderService = orderService;
     }
 
     [HttpGet]
@@ -22,10 +24,10 @@ public class FoodTrucksController : ControllerBase
         return Ok(orders);
     }
 
-    [HttpGet("{orderId:long}")]
-    public async Task<ActionResult<Order>> GetFoodTruckBy(long orderId)
+    [HttpGet("{foodTruckId:long}")]
+    public async Task<ActionResult<Order>> GetFoodTruckBy(long foodTruckId)
     {
-        var foodtruck = await _foodTruckAdminService.GetFoodTruckByIdAsync(orderId);
+        var foodtruck = await _foodTruckAdminService.GetFoodTruckByIdAsync(foodTruckId);
 
         if (foodtruck == null)
         {
@@ -33,5 +35,47 @@ public class FoodTrucksController : ControllerBase
         }
 
         return Ok(foodtruck);
+    }
+
+
+    [HttpGet("{foodtruckId:long}/orders")]
+    public async Task<ActionResult<List<Order>>> GetAllOrders(long foodtruckId)
+    {
+        var orders = await _orderService.GetOrdersForFoodTruck(foodtruckId);
+        return Ok(orders);
+    }
+
+    [HttpGet("{foodtruckId:long}/orders/{orderId:long}")]
+    public async Task<ActionResult<Order>> GetOrderById(long foodtruckId, long orderId)
+    {
+        var order = await _orderService.GetOrderByIdAsync(foodtruckId, orderId);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(order);
+    }
+
+    [HttpPost("{foodtruckId:long}/orders/{orderId:long}/confirm")]
+    public async Task<ActionResult<Order>> ConfirmOrder(long foodtruckId, long orderId)
+    {
+        var order = await _orderService.ConfirmOrderAsync(foodtruckId, orderId);
+        return Ok(order);
+    }
+
+    [HttpPost("{foodtruckId:long}/orders/{orderId:long}/complete")]
+    public async Task<ActionResult<Order>> CompleteOrder(long foodtruckId, long orderId)
+    {
+        var order = await _orderService.CompleteOrderAsync(foodtruckId, orderId);
+        return Ok(order);
+    }
+
+    [HttpPost("{foodtruckId:long}/orders/{orderId:long}/cancel")]
+    public async Task<ActionResult<Order>> CancelOrder(long foodtruckId, long orderId)
+    {
+        var order = await _orderService.CancelOrderAsync(foodtruckId, orderId);
+        return Ok(order);
     }
 }
