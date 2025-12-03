@@ -1,0 +1,28 @@
+using Auth0.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Eleven95.TruckBites.WebApp.Controllers;
+
+[ApiController]
+[AllowAnonymous]
+[Route("[controller]")]
+public class AccountController : ControllerBase
+{
+    [HttpGet("login")]
+    public IActionResult Login(string returnUrl = "/")
+    {
+        return Challenge(new AuthenticationProperties { RedirectUri = returnUrl },
+            Auth0Constants.AuthenticationScheme);
+    }
+
+    [HttpGet("logout")]
+    public async Task<IActionResult> Logout(string returnUrl = "/")
+    {
+        await HttpContext.SignOutAsync(Auth0Constants.AuthenticationScheme);
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return Redirect(returnUrl);
+    }
+}

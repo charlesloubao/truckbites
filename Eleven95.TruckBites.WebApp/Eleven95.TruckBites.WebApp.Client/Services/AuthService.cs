@@ -17,7 +17,7 @@ public class AuthService : IAuthService
 
     public async Task<SignInResponse> SignInWithEmailAndPassword(SignInRequest model)
     {
-        var response = await _httpClient.PostAsync("/app/auth/signin", JsonContent.Create(model));
+        var response = await _httpClient.PostAsync("/account/login", JsonContent.Create(model));
         try
         {
             response.EnsureSuccessStatusCode();
@@ -38,7 +38,7 @@ public class AuthService : IAuthService
 
     public async Task SignOutAsync()
     {
-        var response = await _httpClient.PostAsync("/app/auth/signout", null);
+        var response = await _httpClient.PostAsync("/account/logout", null);
         response.EnsureSuccessStatusCode();
     }
 }

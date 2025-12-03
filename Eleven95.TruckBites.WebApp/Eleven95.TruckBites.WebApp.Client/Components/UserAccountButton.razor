@@ -3,20 +3,26 @@
 @inject NavigationManager NavigationManager
 @inject IAuthService AuthService
 
-@if (RendererInfo.IsInteractive)
-{
-    <AuthorizeView>
-        <Authorized>
-            <div>
-                <span>@AuthState!.User.Identity!.Name</span>
-                <button @onclick="Logout">Logout</button>
-            </div>
-        </Authorized>
-        <NotAuthorized>
-            <a href="/app/auth/signin">Sign in</a>
-        </NotAuthorized>
-    </AuthorizeView>
-}
+   <AuthorizeView>
+    <Authorized>
+        <div>
+            <strong>User Info</strong>
+            <ul>
+                @foreach (var claim in (AuthState?.User.Claims ?? []))
+                {
+                    <li>
+                        <strong>@claim.Type: </strong>
+                        <span>@claim.Value</span>
+                    </li>
+                }
+            </ul>
+            <a href="/account/logout">Logout</a>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/account/login">Sign in</a>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     [CascadingParameter] public Task<AuthenticationState>? GetAuth { get; set; }
@@ -29,12 +35,6 @@
         {
             AuthState = await GetAuth;
         }
-    }
-
-    private async Task Logout()
-    {
-        await AuthService.SignOutAsync();
-        NavigationManager.NavigateTo("/", forceLoad: true);
     }
 
 }
