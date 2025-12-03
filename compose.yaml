@@ -3,13 +3,12 @@
     restart: always
     image: mysql:8.0
     container_name: truckbites_mysql
+
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: truckbites
-      MYSQL_USER: truckbites_user
-      MYSQL_PASSWORD: truckbites_password
-    ports:
-      - "3306:3306"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
   
@@ -23,10 +22,25 @@
     depends_on:
       mysql:
         condition: service_started
+
     environment:
-      - ConnectionStrings__DefaultConnection=Server=mysql;Database=truckbites;User=truckbites_user;Password=truckbites_password;
+      - ConnectionStrings__DefaultConnection=${DB_ROOT_CONNECTION_STRING}
+
+  phpmyadmin:
+    restart: always
+    image: phpmyadmin:latest
+    container_name: truckbites_phpmyadmin
+    depends_on:
+      - mysql
+
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+    ports:
+      - "8081:80"
   
-  webapi:
+  customer-webapi:
     restart: always
     build:
       context: .
@@ -36,31 +50,31 @@
         condition: service_started
       ef-migrations:
         condition: service_completed_successfully
-    environment:
-      - JwtSettings__Issuer=https://truckbites.eleven95.co
-      - JwtSettings__Audience=https://truckbites.eleven95.co
-      - JwtSettings__SecretKey=9D368479-BD44-4FB4-87CA-7916F4A81B60
-      - ConnectionStrings__DefaultConnection=Server=mysql;Database=truckbites;User=truckbites_user;Password=truckbites_password;
-    ports:
-      - "8080:8080"
-      - "8081:8081"
 
-  webapp:
+    environment:
+      - JwtSettings__Authority=${CUSTOMER_WEBAPI_JWT_SETTINGS_AUTHORITY}
+      - JwtSettings__Audience=${CUSTOMER_WEBAPI_JWT_SETTINGS_AUDIENCE}
+      - ConnectionStrings__DefaultConnection=${DB_APP_CONNECTION_STRING}
+
+  customer-webapp:
     restart: always
     build:
       context: .
       dockerfile: Eleven95.TruckBites.WebApp/Eleven95.TruckBites.WebApp/Dockerfile
     depends_on:
       - mysql
-      - webapi
+      - customer-webapi
+
     environment:
-      - Api__BaseUrl=http://webapi:8080/
-      - ReverseProxy__Clusters__external-api__Destinations__destination1__Address=http://webapi:8080/
+      - Api__BaseUrl=http://customer-webapi:8080/
+      - ReverseProxy__Clusters__external-api__Destinations__destination1__Address=http://customer-webapi:8080/
+      - Auth0__Domain=${CUSTOMER_WEBAPP_AUTH0_DOMAIN}
+      - Auth0__ClientId=${CUSTOMER_WEBAPP_AUTH0_CLIENT_ID}
+      - Auth0__Audience=${CUSTOMER_WEBAPP_AUTH0_AUDIENCE}
+      - Auth0__ClientSecret=${CUSTOMER_WEBAPP_AUTH0_CLIENT_SECRET}
     
     ports:
-      - "8082:8080"
-      - "8083:8081"
-
+      - "8080:8080"
 
 volumes:
   mysql_data:

@@ -1,6 +1,6 @@
 # This is a generated file. Not intended for manual editing.
 services:
-  webapi:
+  customer-webapi:
     build:
       context: "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites"
       dockerfile: "Eleven95.TruckBites.WebApi/Dockerfile"
@@ -20,7 +20,7 @@ services:
     - "C:\\Users\\Charles\\AppData\\Roaming\\Microsoft\\UserSecrets:/home/app/.microsoft/usersecrets"
     - "C:\\Users\\Charles\\.nuget\\packages:/home/app/.nuget/packages"
     working_dir: "/app"
-  webapp:
+  customer-webapp:
     build:
       context: "C:\\Users\\Charles\\Projects\\12Months12Projects\\Eleven95.TruckBites"
       dockerfile: "Eleven95.TruckBites.WebApp/Eleven95.TruckBites.WebApp/Dockerfile"
