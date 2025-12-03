@@ -4,7 +4,7 @@ namespace Eleven95.TruckBites.Services.Interfaces;
 
 public interface IOrderFulfillmentService
 {
-    public Task<List<Order>> GetOrdersAsync();
+    public Task<List<Order>> GetAllOrdersAsync();
     public Task<Order?> GetOrderByIdAsync(long id);
     public Task<Order> ConfirmOrderAsync(long orderId);
     public Task<Order> CancelOrderAsync(long orderId);

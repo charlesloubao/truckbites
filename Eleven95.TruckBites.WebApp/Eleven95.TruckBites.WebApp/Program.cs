@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using Auth0.AspNetCore.Authentication;
 using Eleven95.TruckBites.Client.Shared.Extensions;
 using Eleven95.TruckBites.Data;
+using Eleven95.TruckBites.Server.Shared;
 using Eleven95.TruckBites.Services.Interfaces;
 using Eleven95.TruckBites.WebApp;
 using Eleven95.TruckBites.WebApp.Client.Services;

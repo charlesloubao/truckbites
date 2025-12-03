@@ -11,6 +11,7 @@
     <ItemGroup>
         <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.5.1" />
         <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
+        <ProjectReference Include="..\..\Eleven95.TruckBites.Server.Shared\Eleven95.TruckBites.Server.Shared.csproj" />
         <ProjectReference Include="..\..\Eleven95.TruckBites.Services\Eleven95.TruckBites.Services.csproj" />
         <ProjectReference Include="..\Eleven95.TruckBites.Vendor.WebApp.Client\Eleven95.TruckBites.Vendor.WebApp.Client.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.0" />

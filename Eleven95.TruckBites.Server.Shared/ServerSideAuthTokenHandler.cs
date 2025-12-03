@@ -1,7 +1,8 @@
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 
-namespace Eleven95.TruckBites.WebApp;
+namespace Eleven95.TruckBites.Server.Shared;
 
 public class ServerSideAuthTokenHandler(IHttpContextAccessor httpContextAccessor) : DelegatingHandler
 {

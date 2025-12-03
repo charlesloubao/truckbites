@@ -1,0 +1,42 @@
+@page "/foodtrucks/{foodtruckId:long}/orders/{orderId:long}"
+
+@using Eleven95.TruckBites.Data.Models
+@using Eleven95.TruckBites.Services.Interfaces
+
+@inject NavigationManager NavigationManager
+@inject IOrderFulfillmentService OrderFulfillmentService
+
+@if (Order == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h2>Order @Order.OrderId</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+        </tr>
+        </thead>
+    </table>
+}
+
+@code {
+    [Parameter] public long OrderId { get; set; }
+    [Parameter] public long FoodTruckId { get; set; }
+    
+    private Order? Order { get; set; }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Order = await OrderFulfillmentService.GetOrderByIdAsync(OrderId);
+        if (Order == null)
+        {
+            NavigationManager.NavigateTo("/not-found");
+        }
+    }
+
+}

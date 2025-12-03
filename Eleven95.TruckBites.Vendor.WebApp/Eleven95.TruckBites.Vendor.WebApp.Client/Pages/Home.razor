@@ -1,7 +1,35 @@
-﻿@page "/"
+﻿@using Eleven95.TruckBites.Services.Interfaces
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@page "/"
+
+@inject IFoodTruckAdminService FoodTruckAdminService
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Home</h1>
 
-Welcome to your new app.
+@if (FoodTrucks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <ul>
+        @foreach (var foodTruck in FoodTrucks)
+        {
+            <li><a href="/foodtrucks/@foodTruck.FoodTruckId">@foodTruck.DisplayName</a></li>
+        }
+    </ul>
+}
+
+@code {
+
+    private List<Data.Models.FoodTruck>? FoodTrucks { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        FoodTrucks = await FoodTruckAdminService.GetFoodTrucksAsync();
+    }
+
+}

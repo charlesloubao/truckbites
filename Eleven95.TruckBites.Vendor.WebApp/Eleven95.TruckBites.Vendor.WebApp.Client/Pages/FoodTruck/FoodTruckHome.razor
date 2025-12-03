@@ -1,0 +1,7 @@
+@page "/foodtrucks/{foodtruckId:long}"
+
+<Orders FoodTruckId="@FoodTruckId"/>
+
+@code {
+    [Parameter] public long FoodTruckId { get; set; }
+}

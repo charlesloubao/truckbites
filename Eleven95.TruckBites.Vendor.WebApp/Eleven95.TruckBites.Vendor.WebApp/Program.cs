@@ -1,5 +1,9 @@
 using System.Net.Http.Headers;
 using Auth0.AspNetCore.Authentication;
+using Eleven95.TruckBites.Client.Shared.Extensions;
+using Eleven95.TruckBites.Server.Shared;
+using Eleven95.TruckBites.Services.Interfaces;
+using Eleven95.TruckBites.Vendor.WebApp.Client.Services;
 using Eleven95.TruckBites.Vendor.WebApp.Components;
 using Microsoft.AspNetCore.Authentication;
 using Yarp.ReverseProxy.Transforms;
@@ -12,6 +16,9 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
     options.ClientId = builder.Configuration["Auth0:ClientId"]!;
     options.ClientSecret = builder.Configuration["Auth0:ClientSecret"]!;
 }).WithAccessToken(options => { options.Audience = builder.Configuration["Auth0:Audience"]; });
+
+builder.Services.AddAppHttpClients(builder.Configuration["Api:BaseUrl"]!)
+    .AddHttpMessageHandler<ServerSideAuthTokenHandler>();
 
 builder.Services.AddAuthorization();
 
@@ -47,6 +54,9 @@ builder.Services.AddRazorComponents()
     .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
 
 builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddScoped<IFoodTruckAdminService, FoodTruckAdminService>();
+builder.Services.AddScoped<IOrderFulfillmentService, OrderFulfillmentService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

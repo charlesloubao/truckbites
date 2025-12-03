@@ -13,5 +13,4 @@ builder.Services.AddAppHttpClients(builder.HostEnvironment.BaseAddress);
 builder.Services.AddScoped<IFoodTruckAdminService, FoodTruckAdminService>();
 builder.Services.AddScoped<IOrderFulfillmentService, OrderFulfillmentService>();
 
-
 await builder.Build().RunAsync();

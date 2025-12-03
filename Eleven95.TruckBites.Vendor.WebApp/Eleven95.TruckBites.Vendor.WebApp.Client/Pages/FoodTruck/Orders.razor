@@ -1,0 +1,10 @@
+@page "/foodtrucks/{foodtruckId:long}/orders"
+
+@using Eleven95.TruckBites.Vendor.WebApp.Client.Components.FoodTruckDashboard
+
+<FoodTruckOrdersList FoodTruckId="FoodTruckId"/>
+
+@code {
+    [Parameter] [EditorRequired] public long FoodTruckId { get; set; }
+
+}

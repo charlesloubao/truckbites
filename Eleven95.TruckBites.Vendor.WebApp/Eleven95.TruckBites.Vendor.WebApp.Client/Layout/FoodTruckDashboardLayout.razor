@@ -1,0 +1,30 @@
+@layout MainLayout
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+<h2>FoodTruckId = @FoodTruckId</h2>
+<nav>
+    <ul>
+        <li><a href="/foodtrucks/@FoodTruckId">Dashboard</a></li>
+        <li><a href="/foodtrucks/@FoodTruckId/orders">Orders</a></li>
+        <li><a href="/foodtrucks/@FoodTruckId/menu">Menu</a></li>
+        <li><a href="/foodtrucks/@FoodTruckId/settings">Settings</a></li>
+    </ul>
+</nav>
+@Body
+
+@code {
+    private long FoodTruckId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if (segments.Length >= 2 && segments[0] == "foodtrucks" && long.TryParse(segments[1], out var id))
+        {
+            FoodTruckId = id;
+        }
+    }
+
+}
