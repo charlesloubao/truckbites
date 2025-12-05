@@ -19,6 +19,12 @@ using AuthService = Eleven95.TruckBites.WebApp.Services.AuthService;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
 // Add services to the container.
 // Add services to the container.
 builder.Services.AddAuth0WebAppAuthentication(options =>
@@ -89,6 +95,8 @@ builder.Services.AddControllers()
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -102,11 +110,6 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedProto
-});
-
 app.UseAuthentication();
 app.UseAuthorization();
 

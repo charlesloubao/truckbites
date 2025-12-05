@@ -61,6 +61,12 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddScoped<IFoodTruckAdminService, FoodTruckAdminService>();
@@ -79,6 +85,8 @@ builder.Services.AddControllers()
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -93,10 +101,6 @@ else
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedProto
-});
 app.UseAuthentication();
 app.UseAuthorization();
 
