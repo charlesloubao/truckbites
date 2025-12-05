@@ -24,7 +24,9 @@ public class OrderService : IOrderService
 
     public async Task<List<Order>> GetAllOrdersAsync()
     {
-        return await _dbContext.Orders.ToListAsync();
+        return await _dbContext.Orders
+            .Where(o => o.UserId == _userProvider.GetCurrentUserId())
+            .ToListAsync();
     }
 
     public async Task<Order?> GetOrderByIdAsync(long id)
@@ -32,6 +34,7 @@ public class OrderService : IOrderService
         return await _dbContext.Orders
             .Include(o => o.FoodTruck)
             .Include(o => o.OrderItems)
+            .Where(o => o.UserId == _userProvider.GetCurrentUserId())
             .FirstOrDefaultAsync(o => o.OrderId == id);
     }
 
@@ -39,13 +42,15 @@ public class OrderService : IOrderService
     {
         var existingOrderProcessing =
             await _dbContext.Orders.AnyAsync(o =>
-            (
-                o.Status == OrderStatus.Created ||
-                o.Status == OrderStatus.Processing ||
-                o.Status == OrderStatus.PendingPayment ||
-                o.Status == OrderStatus.PaymentFailed ||
-                o.Status == OrderStatus.PaymentSucceeded
-            ) && o.FoodTruckId == request.FoodTruckId);
+                (
+                    o.Status == OrderStatus.Created ||
+                    o.Status == OrderStatus.Processing ||
+                    o.Status == OrderStatus.PendingPayment ||
+                    o.Status == OrderStatus.PaymentFailed ||
+                    o.Status == OrderStatus.PaymentSucceeded
+                ) && o.FoodTruckId == request.FoodTruckId
+                  && o.UserId == _userProvider.GetCurrentUserId()
+            );
 
         if (existingOrderProcessing)
         {
@@ -73,6 +78,7 @@ public class OrderService : IOrderService
     public async Task<Order> AddItemToOrderAsync(AddItemToOrderRequest request)
     {
         var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
+            o.UserId == _userProvider.GetCurrentUserId() &&
             o.OrderId == request.OrderId && o.Status == OrderStatus.Created);
 
         if (order == null)
@@ -143,22 +149,6 @@ public class OrderService : IOrderService
                 UpdatedAt = DateTime.UtcNow,
                 Status = PaymentStatus.Success
             };
-
-            //TODO: This most likely needs to be moved to a background job
-            _logger.LogInformation("Creating instant payout to food truck {FoodTruckId}", order.FoodTruckId);
-
-            var payout = new Payout()
-            {
-                Amount = order.Amount,
-                ExternalId = Guid.NewGuid().ToString(),
-                PaymentProcessor = PaymentProcessorType.None,
-                FoodTruckId = order.FoodTruckId,
-                Status = PayoutStatus.Completed,
-                CreatedDate = DateTime.UtcNow,
-                CompletedDate = DateTime.UtcNow,
-                UpdatedDate = DateTime.UtcNow
-            };
-            _dbContext.Payouts.Add(payout);
 
             _logger.LogInformation("Setting order {OrderId} as PendingConfirmation from merchant", order.OrderId);
             order.Payment = payment;

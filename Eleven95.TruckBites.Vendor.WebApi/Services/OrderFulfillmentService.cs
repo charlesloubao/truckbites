@@ -84,6 +84,22 @@ public class OrderFulfillmentService : IOrderFulfillmentService
 
         order.Status = OrderStatus.Completed;
         order.UpdatedAt = DateTime.UtcNow;
+        
+        //TODO: This most likely needs to be moved to a background job
+        _logger.LogInformation("Creating instant payout to food truck {FoodTruckId}", order.FoodTruckId);
+
+        var payout = new Payout()
+        {
+            Amount = order.Amount,
+            ExternalId = Guid.NewGuid().ToString(),
+            PaymentProcessor = PaymentProcessorType.None,
+            FoodTruckId = order.FoodTruckId,
+            Status = PayoutStatus.Completed,
+            CreatedDate = DateTime.UtcNow,
+            CompletedDate = DateTime.UtcNow,
+            UpdatedDate = DateTime.UtcNow
+        };
+        _dbContext.Payouts.Add(payout);
 
         await _dbContext.SaveChangesAsync();
         return order;
