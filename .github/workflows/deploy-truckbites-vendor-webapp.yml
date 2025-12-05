@@ -1,4 +1,4 @@
-name: Trigger auto deployment for truckbites-vendor-webapp
+name: Deploy truckbites-vendor-webapp
 
 # When this action will be executed
 on:

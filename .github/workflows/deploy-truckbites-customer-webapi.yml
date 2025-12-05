@@ -1,4 +1,4 @@
-name: Trigger auto deployment for truckbites-customer-webapi
+name: Deploy truckbites-customer-webapi
 
 # When this action will be executed
 on:
