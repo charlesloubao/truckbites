@@ -5,6 +5,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5155918D-BF8C-4344-8ECC-D6D803679FA3}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
+		deployment\1_secrets.local.yml = deployment\1_secrets.local.yml
+		deployment\1_secrets.yml = deployment\1_secrets.yml
+		deployment\2_deploy.yml = deployment\2_deploy.yml
+		deployment\k8s_deploy.ps1 = deployment\k8s_deploy.ps1
+		deployment\k8s_port_forwarding.ps1 = deployment\k8s_port_forwarding.ps1
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eleven95.TruckBites.EF", "Eleven95.TruckBites.EF\Eleven95.TruckBites.EF.csproj", "{E257E0E0-91E1-4948-B788-226D08799234}"
