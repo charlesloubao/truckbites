@@ -4,19 +4,25 @@ name: Deploy truckbites-vendor-webapi
 on:
   # Automatically trigger it when detected changes in repo
   push:
-    branches: 
+    branches:
       [ main ]
     paths:
-    - '**'
-    - '.github/workflows/deploy-truckbites-vendor-webapi.yml'
+      # Rebuild when dependencies change
+      - "Eleven95.TruckBites.Server.Shared/**"
+      - "Eleven95.TruckBites.Data/**"
+      - "Eleven95.TruckBites.Services/**"
+      # Rebuild when the app changes
+      - "Eleven95.TruckBites.Vendor.WebApi/**"
+      # Rebuild when the workflow changes
+      - '.github/workflows/deploy-truckbites-vendor-webapi.yml'
 
   # Allow manual trigger 
-  workflow_dispatch:      
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       id-token: write #This is required for requesting the OIDC JWT Token
       contents: read #Required when GH token is used to authenticate with private repo
 
