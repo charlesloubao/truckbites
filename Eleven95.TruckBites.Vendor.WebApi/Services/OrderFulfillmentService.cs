@@ -23,7 +23,6 @@ public class OrderFulfillmentService : IOrderFulfillmentService
     public async Task<List<Order>> GetOrdersForFoodTruck(long foodTruckId)
     {
         var orders = await _dbContext.Orders
-            .IgnoreQueryFilters()
             .Where(o => o.FoodTruckId == foodTruckId)
             .ToListAsync();
 
@@ -33,7 +32,6 @@ public class OrderFulfillmentService : IOrderFulfillmentService
     public async Task<Order?> GetOrderByIdAsync(long foodtruckId, long orderId)
     {
         var order = await _dbContext.Orders
-            .IgnoreQueryFilters()
             .Include(o => o.OrderItems)
             .FirstOrDefaultAsync(o => o.OrderId == orderId && o.FoodTruckId == foodtruckId);
 
