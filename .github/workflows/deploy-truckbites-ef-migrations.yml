@@ -1,0 +1,80 @@
+name: Deploy truckbites-ef-migrations
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches:
+      [ main ]
+    paths:
+      # Rebuild when dependencies change
+      - "Eleven95.TruckBites.Data/**"
+      # Rebuild when the app changes
+      - "Eleven95.TruckBites.EF/**"
+      # Rebuild when the workflow changes
+      - '.github/workflows/deploy-truckbites-ef-migrations.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.TRUCKBITESVENDORWEBAPP_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.TRUCKBITESVENDORWEBAPP_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.TRUCKBITESVENDORWEBAPP_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to ACR
+        uses: docker/login-action@v3
+        with:
+          registry: eleven95truckbites.azurecr.io
+          username: ${{ secrets.TRUCKBITESVENDORWEBAPP_REGISTRY_USERNAME }}
+          password: ${{ secrets.TRUCKBITESVENDORWEBAPP_REGISTRY_PASSWORD }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          dockerfilePath: Eleven95.TruckBites.WebApi/Dockerfile
+          registryUrl: eleven95truckbites.azurecr.io
+          registryUsername: ${{ secrets.TRUCKBITESVENDORWEBAPP_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.TRUCKBITESVENDORWEBAPP_REGISTRY_PASSWORD }}
+          containerAppName: truckbites-ef-migrations
+          resourceGroup: TruckBites
+          imageToBuild: eleven95truckbites.azurecr.io/truckbites-ef-migrations:${{ github.sha }}
+
+      - name: Build and Push to ACR
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ github.workspace }}
+          file: Eleven95.TruckBites.EF/migrations.Dockerfile
+          push: true
+          tags: eleven95truckbites.azurecr.io/truckbites-ef-migrations:${{ github.sha }}
+
+      - name: Update Azure Container Job
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az containerapp job update \
+              --name truckbites-ef-migrations \
+              --resource-group TruckBites \
+              --image eleven95truckbites.azurecr.io/truckbites-ef-migrations:${{ github.sha }}
+
+      - name: Run Entity Framework Migrations
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az containerapp job start \
+              --name truckbites-ef-migrations} \
+              --resource-group TruckBites
