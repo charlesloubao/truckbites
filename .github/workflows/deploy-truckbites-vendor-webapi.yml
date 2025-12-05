@@ -35,7 +35,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
-          dockerfilePath: Eleven95.TruckBites.Vendor.WebApi/Eleven95.TruckBites.Vendor.WebApi/Dockerfile
+          dockerfilePath: Eleven95.TruckBites.Vendor.WebApi/Dockerfile
           registryUrl: eleven95truckbites.azurecr.io
           registryUsername: ${{ secrets.TRUCKBITESVENDORWEBAPP_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.TRUCKBITESVENDORWEBAPP_REGISTRY_PASSWORD }}
