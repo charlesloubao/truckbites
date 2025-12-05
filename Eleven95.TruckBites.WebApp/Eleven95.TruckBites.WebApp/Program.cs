@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Yarp.ReverseProxy.Transforms;
 using AuthService = Eleven95.TruckBites.WebApp.Services.AuthService;
 
@@ -25,10 +26,7 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
     options.Domain = builder.Configuration["Auth0:Domain"]!;
     options.ClientId = builder.Configuration["Auth0:ClientId"]!;
     options.ClientSecret = builder.Configuration["Auth0:ClientSecret"]!;
-}).WithAccessToken(options =>
-{
-    options.Audience = builder.Configuration["Auth0:Audience"];
-});
+}).WithAccessToken(options => { options.Audience = builder.Configuration["Auth0:Audience"]; });
 
 builder.Services.AddAuthorization();
 
@@ -104,6 +102,10 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
