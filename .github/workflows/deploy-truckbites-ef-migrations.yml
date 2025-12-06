@@ -64,5 +64,5 @@ jobs:
         with:
           inlineScript: |
             az containerapp job start \
-              --name truckbites-ef-migrations} \
+              --name truckbites-ef-migrations \
               --resource-group TruckBites
