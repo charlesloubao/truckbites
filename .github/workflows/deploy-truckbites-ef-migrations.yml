@@ -71,6 +71,7 @@ jobs:
             --output json > job-config.json
 
       - name: Update description with new image
+        uses: actions/setup-python@v6.1.0
         with:
           inlineScript: |
             python3 -c "import json, sys; \
