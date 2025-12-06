@@ -50,30 +50,14 @@ jobs:
           push: true
           tags: eleven95truckbites.azurecr.io/truckbites-ef-migrations:${{ github.sha }}
 
-      - name: Get Job Spec
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            az containerapp job show --name truckbites-ef-migrations \
-            --resource-group TruckBites \
-            --output json > job-config.json
-
-      - name: Update description with new image
-        uses: actions/setup-python@v6.1.0
-        with:
-          inlineScript: |
-            python3 -c "import json, sys; \
-            data = json.load(open('job-config.json')); \
-            data['properties']['template']['containers'][0]['image'] = 'eleven95truckbites.azurecr.io/truckbites-ef-migrations:${{ github.sha }}'; \
-            json.dump(data, open('job-config.json', 'w'), indent=2)"
-
       - name: Update Job Container
         uses: azure/cli@v2
         with:
           inlineScript: |
-            az containerapp job update --name truckbites-ef-migrations \
-            --resource-group TruckBites \
-            --yaml job-config.json
+            az containerapp job update \
+              --name truckbites-ef-migrations \
+              --resource-group TruckBites \
+              --image eleven95truckbites.azurecr.io/truckbites-ef-migrations:${{ github.sha }}
 
       - name: Run Entity Framework Migrations
         uses: azure/cli@v2
