@@ -85,7 +85,7 @@ jobs:
           inlineScript: |
             az containerapp job update --name truckbites-ef-migrations \
             --resource-group TruckBites \
-            --json job-config.json
+            --yaml job-config.json
 
       - name: Run Entity Framework Migrations
         uses: azure/cli@v2
