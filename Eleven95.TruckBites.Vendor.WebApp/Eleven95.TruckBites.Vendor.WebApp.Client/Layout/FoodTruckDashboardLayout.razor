@@ -1,29 +1,59 @@
 @layout MainLayout
+@using Eleven95.TruckBites.Data.Models
+@using Eleven95.TruckBites.Services.Interfaces
+@using Eleven95.TruckBites.Vendor.WebApp.Client.Services
 @inherits LayoutComponentBase
-@inject NavigationManager NavigationManager
 
-<h2>FoodTruckId = @FoodTruckId</h2>
-<nav>
-    <ul>
-        <li><a href="/foodtrucks/@FoodTruckId">Dashboard</a></li>
-        <li><a href="/foodtrucks/@FoodTruckId/orders">Orders</a></li>
-        <li><a href="/foodtrucks/@FoodTruckId/menu">Menu</a></li>
-        <li><a href="/foodtrucks/@FoodTruckId/settings">Settings</a></li>
-    </ul>
-</nav>
-@Body
+@inject ILogger<FoodTruckDashboardLayout> Logger;
+@inject NavigationManager NavigationManager
+@inject IFoodTruckAdminService FoodTruckAdminService
+
+@if (FoodTruck == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h2>@FoodTruck.DisplayName</h2>
+    <nav>
+        <ul>
+            <li><a href="/foodtrucks/@FoodTruckId">Dashboard</a></li>
+            <li><a href="/foodtrucks/@FoodTruckId/orders">Orders</a></li>
+            <li><a href="/foodtrucks/@FoodTruckId/menu">Menu</a></li>
+            <li><a href="/foodtrucks/@FoodTruckId/settings">Settings</a></li>
+        </ul>
+    </nav>
+    <CascadingValue Value="@FoodTruck">
+        @Body
+    </CascadingValue>
+}
 
 @code {
+    [PersistentState] public FoodTruck? FoodTruck { get; set; }
+
     private long FoodTruckId { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        if (FoodTruck != null)
+        {
+            Logger.LogInformation("Re-using food truck state from server");
+            return;
+        }
+
         var uri = new Uri(NavigationManager.Uri);
         var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
         if (segments.Length >= 2 && segments[0] == "foodtrucks" && long.TryParse(segments[1], out var id))
         {
             FoodTruckId = id;
+        }
+
+        FoodTruck = await FoodTruckAdminService.GetFoodTruckByIdAsync(FoodTruckId);
+
+        if (FoodTruck == null)
+        {
+            NavigationManager.NotFound();
         }
     }
 

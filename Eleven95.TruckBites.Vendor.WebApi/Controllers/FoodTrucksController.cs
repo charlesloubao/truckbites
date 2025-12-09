@@ -36,6 +36,13 @@ public class FoodTrucksController : ControllerBase
 
         return Ok(foodtruck);
     }
+    
+    [HttpPut("{foodTruckId:long}/menu")]
+    public async Task<ActionResult<Order>> UpdateFoodTruckMenu(long foodTruckId, [FromBody] List<FoodTruckMenuItem> foodTruckMenuItems)
+    {
+        var menu = await _foodTruckAdminService.UpdateFoodTruckMenuAsync(foodTruckId, foodTruckMenuItems);
+        return Ok(menu);
+    }
 
 
     [HttpGet("{foodtruckId:long}/orders")]
