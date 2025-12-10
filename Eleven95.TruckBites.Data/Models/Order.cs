@@ -22,6 +22,9 @@ public class Order
     public Payment? Payment { get; set; }
 
     public List<OrderItem> OrderItems { get; set; }
+    
+    public long? RefundId { get; set; }
+    public Refund? Refund { get; set; }
 }
 
 public enum OrderStatus

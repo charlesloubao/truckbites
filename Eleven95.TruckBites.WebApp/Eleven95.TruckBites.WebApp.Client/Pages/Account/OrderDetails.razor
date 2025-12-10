@@ -31,6 +31,18 @@ else
 
         <p><strong>Created:</strong> @Order.CreatedAt.ToLocalTime()</p>
         <p><strong>Updated:</strong> @Order.UpdatedAt.ToLocalTime()</p>
+
+
+        @if (Order.Refund != null)
+        {
+            <h3>Refund details</h3>
+            <div class="order-info">
+                <p><strong>Status:</strong> @Order.Refund.Status</p>
+                <p><strong>Amount:</strong> $@Order.Refund.Amount.ToString("F2")</p>
+                <p><strong>Created:</strong> @Order.Refund.CreatedAt.ToString("g")</p>
+                <p><strong>Updated:</strong> @Order.Refund.UpdatedAt.ToString("g")</p>
+            </div>
+        }
     </div>
 }
 

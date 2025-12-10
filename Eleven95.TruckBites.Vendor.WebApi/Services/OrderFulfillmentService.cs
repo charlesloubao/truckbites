@@ -33,6 +33,7 @@ public class OrderFulfillmentService : IOrderFulfillmentService
     {
         var order = await _dbContext.Orders
             .Include(o => o.OrderItems)
+            .Include(o => o.Refund)
             .FirstOrDefaultAsync(o => o.OrderId == orderId && o.FoodTruckId == foodtruckId);
 
         return order;
@@ -40,68 +41,115 @@ public class OrderFulfillmentService : IOrderFulfillmentService
 
     public async Task<Order> ConfirmOrderAsync(long foodTruckId, long orderId)
     {
-        var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
-            o.FoodTruckId == foodTruckId && o.OrderId == orderId);
-
-        if (order == null)
+        var transaction = await _dbContext.Database.BeginTransactionAsync();
+        try
         {
-            throw new Exception("Order not found.");
+            var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
+                o.FoodTruckId == foodTruckId && o.OrderId == orderId);
+
+            if (order == null)
+            {
+                throw new Exception("Order not found.");
+            }
+
+            order.Status = OrderStatus.Processing;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return order;
         }
-
-        order.Status = OrderStatus.Processing;
-        order.UpdatedAt = DateTime.UtcNow;
-
-        await _dbContext.SaveChangesAsync();
-        return order;
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<Order> CancelOrderAsync(long foodTruckId, long orderId)
     {
-        var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
-            o.FoodTruckId == foodTruckId && o.OrderId == orderId);
+        var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        if (order == null)
+        try
         {
-            throw new Exception("Order not found.");
+            var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
+                o.FoodTruckId == foodTruckId && o.OrderId == orderId);
+
+            if (order == null)
+            {
+                throw new Exception("Order not found.");
+            }
+
+            // Cancel order
+            order.Status = OrderStatus.Cancelled;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            // Refund user
+            var refund = new Refund()
+            {
+                Amount = order.Amount,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                ExternalId = "",
+                OrderId = orderId,
+                PaymentProcessor = PaymentProcessorType.None,
+                Status = RefundStatus.Success
+            };
+
+            await _dbContext.Refunds.AddAsync(refund);
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return order;
         }
-
-        order.Status = OrderStatus.Cancelled;
-        order.UpdatedAt = DateTime.UtcNow;
-
-        await _dbContext.SaveChangesAsync();
-        return order;
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<Order> CompleteOrderAsync(long foodTruckId, long orderId)
     {
-        var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
-            o.FoodTruckId == foodTruckId && o.OrderId == orderId);
-
-        if (order == null)
+        var transaction = await _dbContext.Database.BeginTransactionAsync();
+        try
         {
-            throw new Exception("Order not found.");
+            var order = await _dbContext.Orders.FirstOrDefaultAsync(o =>
+                o.FoodTruckId == foodTruckId && o.OrderId == orderId);
+
+            if (order == null)
+            {
+                throw new Exception("Order not found.");
+            }
+
+            order.Status = OrderStatus.Completed;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            //TODO: This most likely needs to be moved to a background job
+            _logger.LogInformation("Creating instant payout to food truck {FoodTruckId}", order.FoodTruckId);
+
+            var payout = new Payout()
+            {
+                Amount = order.Amount,
+                ExternalId = Guid.NewGuid().ToString(),
+                PaymentProcessor = PaymentProcessorType.None,
+                FoodTruckId = order.FoodTruckId,
+                Status = PayoutStatus.Completed,
+                CreatedDate = DateTime.UtcNow,
+                CompletedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow
+            };
+
+            _dbContext.Payouts.Add(payout);
+            await _dbContext.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+            return order;
         }
-
-        order.Status = OrderStatus.Completed;
-        order.UpdatedAt = DateTime.UtcNow;
-        
-        //TODO: This most likely needs to be moved to a background job
-        _logger.LogInformation("Creating instant payout to food truck {FoodTruckId}", order.FoodTruckId);
-
-        var payout = new Payout()
+        catch (Exception)
         {
-            Amount = order.Amount,
-            ExternalId = Guid.NewGuid().ToString(),
-            PaymentProcessor = PaymentProcessorType.None,
-            FoodTruckId = order.FoodTruckId,
-            Status = PayoutStatus.Completed,
-            CreatedDate = DateTime.UtcNow,
-            CompletedDate = DateTime.UtcNow,
-            UpdatedDate = DateTime.UtcNow
-        };
-        _dbContext.Payouts.Add(payout);
-
-        await _dbContext.SaveChangesAsync();
-        return order;
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }

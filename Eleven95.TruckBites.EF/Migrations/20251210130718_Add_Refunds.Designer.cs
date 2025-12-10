@@ -3,6 +3,7 @@ using System;
 using Eleven95.TruckBites.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eleven95.TruckBites.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251210130718_Add_Refunds")]
+    partial class Add_Refunds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,6 +116,8 @@ namespace Eleven95.TruckBites.EF.Migrations
                     b.HasIndex("FoodTruckId");
 
                     b.HasIndex("PaymentId");
+
+                    b.HasIndex("RefundId");
 
                     b.HasIndex("UserId");
 
@@ -250,9 +255,6 @@ namespace Eleven95.TruckBites.EF.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<long>("OrderId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("PaymentProcessor")
                         .IsRequired()
                         .HasColumnType("text");
@@ -265,9 +267,6 @@ namespace Eleven95.TruckBites.EF.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("RefundId");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique();
 
                     b.ToTable("Refunds");
                 });
@@ -317,6 +316,10 @@ namespace Eleven95.TruckBites.EF.Migrations
                         .WithMany()
                         .HasForeignKey("PaymentId");
 
+                    b.HasOne("Eleven95.TruckBites.Data.Models.Refund", "Refund")
+                        .WithMany()
+                        .HasForeignKey("RefundId");
+
                     b.HasOne("Eleven95.TruckBites.Data.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
@@ -326,6 +329,8 @@ namespace Eleven95.TruckBites.EF.Migrations
                     b.Navigation("FoodTruck");
 
                     b.Navigation("Payment");
+
+                    b.Navigation("Refund");
 
                     b.Navigation("User");
                 });
@@ -364,17 +369,6 @@ namespace Eleven95.TruckBites.EF.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Eleven95.TruckBites.Data.Models.Refund", b =>
-                {
-                    b.HasOne("Eleven95.TruckBites.Data.Models.Order", "Order")
-                        .WithOne("Refund")
-                        .HasForeignKey("Eleven95.TruckBites.Data.Models.Refund", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("Eleven95.TruckBites.Data.Models.FoodTruck", b =>
                 {
                     b.Navigation("MenuItems");
@@ -387,8 +381,6 @@ namespace Eleven95.TruckBites.EF.Migrations
             modelBuilder.Entity("Eleven95.TruckBites.Data.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
-
-                    b.Navigation("Refund");
                 });
 
             modelBuilder.Entity("Eleven95.TruckBites.Data.Models.User", b =>

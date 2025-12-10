@@ -34,6 +34,7 @@ public class OrderService : IOrderService
         return await _dbContext.Orders
             .Include(o => o.FoodTruck)
             .Include(o => o.OrderItems)
+            .Include(o => o.Refund)
             .Where(o => o.UserId == _userProvider.GetCurrentUserId())
             .FirstOrDefaultAsync(o => o.OrderId == id);
     }
